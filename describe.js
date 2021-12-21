@@ -3,14 +3,13 @@
  * Added by the content script. 
  */
 
-
-
 const async = require('async');
 
 const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
 const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
 
-const key = '0c6281a9ff93464e95cac5559c4d8cfc'; // TODO fix this
+const key = process.env.SUBSCRIPTION_KEY; // to not show it in public code 
+console.log(`This is the key: ${key}`)
 const endpoint = 'https://genalt-api.cognitiveservices.azure.com/';
 
 

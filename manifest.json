@@ -7,10 +7,6 @@
       "matches": ["<all_urls>"],
       "js": ["dist/main.js"]
     }
-  ],
-  "background": {
-    "page": "background.html"
-  },
-
+  ], 
   "web_accessible_resources": ["describe.js"]
 }

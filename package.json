@@ -3,6 +3,7 @@
         "build": "webpack --config webpack.config.js"
     },
     "devDependencies": {
+        "dotenv-webpack": "^7.0.3",
         "webpack": "^5.65.0",
         "webpack-cli": "^4.9.1",
         "webpack-dev-server": "^4.6.0"
@@ -10,6 +11,9 @@
     "dependencies": {
         "@azure/cognitiveservices-computervision": "^8.1.0",
         "@azure/ms-rest-js": "^2.6.0",
-        "async": "^3.2.2"
+        "async": "^3.2.2",
+        "fs": "0.0.1-security",
+        "os": "^0.1.2",
+        "path": "^0.12.7"
     }
 }
