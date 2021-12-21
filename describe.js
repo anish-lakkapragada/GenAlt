@@ -9,7 +9,6 @@ const ComputerVisionClient = require('@azure/cognitiveservices-computervision').
 const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
 
 const key = process.env.SUBSCRIPTION_KEY; // to not show it in public code 
-console.log(`This is the key: ${key}`)
 const endpoint = 'https://genalt-api.cognitiveservices.azure.com/';
 
 
