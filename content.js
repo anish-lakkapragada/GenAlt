@@ -2,8 +2,9 @@
  * This is the javascript file to fix up the page with alt text. 
  */
 
-let LENGTH_MINIMUM = 15;
-let DEFAULT_ALT = 'Generating Caption';
+const LENGTH_MINIMUM = 15;
+const DEFAULT_ALT = 'Generating Caption';
+const USELESS_PHRASES = ['No photo description available.', "Image", "Logo"]; 
 
 // add the describe.js module 
 import {describeImage} from "./describe.js";
@@ -25,7 +26,7 @@ function initialFix () {
     let image = images[i];
 
     // basically if it doesn't have sufficient alt-text
-    if (!useful(image.alt)) {
+    if (!useful(image.alt) || USELESS_PHRASES.includes(image.alt) || image.alt.length == 0 || image.alt == null || image.alt == "") {
       // just set it to something, query later 
       image.alt = DEFAULT_ALT;
     }

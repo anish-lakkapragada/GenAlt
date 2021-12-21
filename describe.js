@@ -1,6 +1,6 @@
 /**
  * Module to get an image description. 
- * Added by the content script. 
+ * Bundled with the content script. 
  */
 
 const async = require('async');
@@ -18,16 +18,13 @@ const computerVisionClient = new ComputerVisionClient(
 
 async function describeImage(describeURL) {
 
-  console.log('-------------------------------------------------');
-  console.log('DESCRIBE IMAGE');
-  console.log();
-
-
   let caption = null; 
+  
   try {
     caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
     console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
   }
+
   catch (error) {
     console.log("Error: " + error);
   }
@@ -35,5 +32,6 @@ async function describeImage(describeURL) {
   console.log(`This is the url ${describeURL}`);
   return caption; 
 }
+
 export {describeImage}; 
 
