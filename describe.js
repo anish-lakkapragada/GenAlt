@@ -18,22 +18,24 @@ const computerVisionClient = new ComputerVisionClient(
   new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': key } }), endpoint);
 
 
-function describeImage(describeURL) {
-  console.log("inside describe image"); 
-  
-  async.series([
-    async function () {
+async function describeImage(describeURL) {
 
-      console.log('-------------------------------------------------');
-      console.log('DESCRIBE IMAGE');
-      console.log();
+  console.log('-------------------------------------------------');
+  console.log('DESCRIBE IMAGE');
+  console.log();
 
 
-      const caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
-      console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
-      return caption; 
-    }])}
+  let caption = null; 
+  try {
+    caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
+    console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
+  }
+  catch (error) {
+    console.log("Error: " + error);
+  }
 
-
+  console.log(`This is the url ${describeURL}`);
+  return caption; 
+}
 export {describeImage}; 
 
