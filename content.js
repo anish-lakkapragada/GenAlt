@@ -34,24 +34,54 @@ function initialFix () {
 }
 
 async function fix () {
-  // go through all the crap images and request on them using azure 
+  // ayy, rate limiting time 
+  let last = new Date();
+  let requestsSent = 0; 
+
+  // 20 calls : 60 sec 
+  // 1 call: 3 sec
+  // wait 3 seconds before every call 
+
   const promises = []; 
   for (let i =0; i < images.length; i++) {
       let image = images[i]; 
       if (image.alt == DEFAULT_ALT) {
-          // then replace it 
+          const timeSinceLast = new Date() - last;
+          console.log("the time since last is : " + timeSinceLast);
+          if (timeSinceLast >= 3000) {
+            console.log("OK good to go"); 
             promises.push(describeImage(image.src).then((caption) => {
                 if (caption != null) {
+                    console.log(`new caption text : ${caption.text}`);
                     image.alt = caption.text;
                 }
             })); 
+          }
+
+          else {
+            // wait 
+            await new Promise(resolve => setTimeout(resolve, 3000 - timeSinceLast));
+            last = new Date(); 
+            console.log("the wait is over");
+            promises.push(describeImage(image.src).then((caption) => {
+              if (caption != null) {
+                  console.log(`new caption text : ${caption.text}`);
+                  image.alt = caption.text;
+              }
+            })); 
+          }
        }
     }
 
     await Promise.all(promises); // wait till these promises resolve
 }
 
-window.addEventListener('load', () => {
-    initialFix();
-    fix(); 
-});
+const main = () =>  {
+  initialFix();
+  fix();
+  console.log("clean up done");
+}
+
+window.addEventListener('load', main); 
+
+window.onchange = main;
