@@ -4,6 +4,10 @@
  * 
  */
 
+// add the describe.js module
+import { describeImage } from './describe.js';
+import { badSite } from './utils.js';
+
 const LENGTH_MINIMUM = 15;
 const DEFAULT_ALT = 'Generating Caption';
 const USELESS_PHRASES = [
@@ -12,13 +16,20 @@ const USELESS_PHRASES = [
 	'Logo'
 ];
 
-// add the describe.js module
-import { describeImage } from './describe.js';
+const IMAGES_SRC = {};
+let iterations = 0;
+const resetAlt = !badSite(window.location);
+
+const rateLimiter = { numCalls: 0, date: new Date() };
 
 function useful(text) {
 	// decides whether the alt text is useful or not based on the length;
 
-	if (text.length < LENGTH_MINIMUM) {
+	if (text == null) {
+		return false;
+	}
+
+	if (text.length < LENGTH_MINIMUM || USELESS_PHRASES.includes(text)) {
 		return false;
 	} // calculate whether or not the alt text is even useful
 	// use metric to determine this
@@ -27,16 +38,15 @@ function useful(text) {
 }
 
 function initialFix() {
-	let images = document.getElementsByTagName('img'); // access all images
+	let images = document.querySelectorAll('img'); // access all images
 	for (let i = 0; i < images.length; i++) {
 		// iterate through all the images
 		let image = images[i];
-
-		console.log(`this is image alt: ${image.alt}`);
 		// basically if it doesn't have sufficient alt-text
-		if (image.alt.length < LENGTH_MINIMUM) {
+		if (!useful(image.alt) && IMAGES_SRC[image.src] == undefined) {
 			// just set it to something, query later
-			console.log(`setting ${image.src} to default alternate text`);
+			image.alt = DEFAULT_ALT;
+		} else if (resetAlt && IMAGES_SRC[image.src] == undefined) {
 			image.alt = DEFAULT_ALT;
 		}
 	}
@@ -47,15 +57,30 @@ async function fix() {
 	const images = document.querySelectorAll('img'); // access all images
 
 	const promises = [];
+
 	for (let i = 0; i < images.length; i++) {
+		if (rateLimiter.numCalls == 6) {
+			await new Promise((resolve) => {
+				setTimeout(resolve, new Date() - rateLimiter.date);
+			});
+
+			rateLimiter.numCalls = 0;
+			rateLimiter.date = new Date();
+		}
+
 		const image = images[i];
-		if (image.alt == DEFAULT_ALT) {
+		if (image.alt == DEFAULT_ALT && IMAGES_SRC[image.src] == undefined) {
 			promises.push(
 				describeImage(image.src).then((caption) => {
-					console.log(`this is the push to text: ${caption} and ${caption.text}`);
-					image.alt = caption.text;
+					if (caption != null) {
+						image.alt = caption.text;
+						IMAGES_SRC[image.src] = image.alt;
+						rateLimiter.numCalls++;
+					}
 				})
 			);
+		} else if (IMAGES_SRC[image.src] != undefined && IMAGES_SRC[image.src] != image.alt) {
+			image.alt = IMAGES_SRC[image.src]; // if it's the same source, it's this caption
 		}
 	}
 
@@ -67,13 +92,15 @@ window.addEventListener('load', (event) =>
 	setTimeout(() => {
 		initialFix();
 		fix();
+		iterations++;
 	}, 1000)
 );
 
-// check when dom updates
-
-const observer = new MutationObserver((mutations) => {
-	// we can check when the DOM changes, okay just refire API calls
-});
-
-observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+// only run the setInterval not on the first
+setInterval(() => {
+	if (iterations > 0) {
+		initialFix();
+		fix();
+		iterations++;
+	}
+}, 1000);

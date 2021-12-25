@@ -3,8 +3,6 @@
  * Bundled with the content script. 
  */
 
-const async = require('async');
-
 const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
 const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
 
@@ -16,18 +14,52 @@ const computerVisionClient = new ComputerVisionClient(
 	endpoint
 );
 
-async function describeImage(describeURL) {
-	let caption = null;
-
-	try {
-		caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
-		console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
-	} catch (error) {
-		console.log('Error: ' + error);
+// is the image a valid image and is it the right size?
+async function valid(url) {
+	// if it ends with svg
+	if (url.includes('.svg')) {
+		return false;
+	} else if (url.includes('data:image')) {
+		// if it starts with data:image
+		return false;
 	}
 
-	console.log(`This is the url ${describeURL}`);
-	return caption;
+	// check the size of the image
+	await new Promise((resolve) => {
+		let photo = new Image();
+		photo.setAttribute('src', url);
+
+		photo.onload = () => {
+			console.log(`width: ${photo.width} height: ${photo.height}`);
+			// when photo has loaded.
+			if (photo.width < 50 || photo.height < 50) {
+				return false;
+			}
+		};
+
+		resolve();
+	});
+
+	return true;
+}
+
+async function describeImage(describeURL) {
+	await valid(describeURL).then(async (valid) => {
+		if (!valid) {
+			return null;
+		}
+
+		let caption = null;
+		try {
+			caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
+			console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
+		} catch (error) {
+			console.log('Error: ' + error);
+		}
+
+		console.log(`This is the url ${describeURL}`);
+		return caption;
+	});
 }
 
 export { describeImage };
