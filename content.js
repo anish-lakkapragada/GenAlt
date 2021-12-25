@@ -1,5 +1,7 @@
 /**
  * This is the javascript file to fix up the page with alt text. 
+ * 
+ * 
  */
 
 const LENGTH_MINIMUM = 15;
@@ -40,30 +42,38 @@ function initialFix() {
 	}
 }
 
+// fix all the images here
 async function fix() {
-	let images = document.getElementsByTagName('img'); // access all images
+	const images = document.querySelectorAll('img'); // access all images
 
-	let image;
 	const promises = [];
 	for (let i = 0; i < images.length; i++) {
-		image = images[i];
+		const image = images[i];
 		if (image.alt == DEFAULT_ALT) {
 			promises.push(
 				describeImage(image.src).then((caption) => {
-					image.alt = caption.text; // just set it to this caption;
+					console.log(`this is the push to text: ${caption} and ${caption.text}`);
+					image.alt = caption.text;
 				})
 			);
 		}
 	}
+
+	await Promise.all(promises);
 }
 
-const main = () => {
-	console.log('running main again');
-	initialFix();
-	fix();
-	console.log('clean up done');
-};
+// on load, solve all the images.
+window.addEventListener('load', (event) =>
+	setTimeout(() => {
+		initialFix();
+		fix();
+	}, 1000)
+);
 
-window.addEventListener('load', main);
+// check when dom updates
 
-window.onchange = main;
+const observer = new MutationObserver((mutations) => {
+	// we can check when the DOM changes, okay just refire API calls
+});
+
+observer.observe(document.body, { attributes: true, childList: true, subtree: true });
