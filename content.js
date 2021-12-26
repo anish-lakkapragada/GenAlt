@@ -1,15 +1,17 @@
 /**
  * This is the javascript file to fix up the page with alt text. 
- * 
- * 
- */
+ * 	
+ * Objective: 
+ * - reduce amount of API calls that are unnecessary
+ * - do we really need to call for each image? what if their are 1000 images on the page? 
+ **/
 
 // add the describe.js module
 import { describeImage } from './describe.js';
 import { badSite } from './utils.js';
 
 const LENGTH_MINIMUM = 15;
-const DEFAULT_ALT = 'Generating Caption';
+const DEFAULT_ALT = 'Generating Caption By GenAlt';
 const USELESS_PHRASES = [
 	'No photo description available.',
 	'Image',
@@ -17,6 +19,7 @@ const USELESS_PHRASES = [
 ];
 
 const IMAGES_SRC = {};
+const ERROR_SRC = {}; // images known to cause trouble
 let iterations = 0;
 const resetAlt = !badSite(window.location);
 
@@ -33,7 +36,6 @@ function useful(text) {
 		return false;
 	} // calculate whether or not the alt text is even useful
 	// use metric to determine this
-
 	return true;
 }
 
@@ -41,8 +43,11 @@ function initialFix() {
 	let images = document.querySelectorAll('img'); // access all images
 	for (let i = 0; i < images.length; i++) {
 		// iterate through all the images
-		let image = images[i];
-		// basically if it doesn't have sufficient alt-text
+		const image = images[i];
+		if (ERROR_SRC[image.src] != undefined) {
+			continue;
+		}
+
 		if (!useful(image.alt) && IMAGES_SRC[image.src] == undefined) {
 			// just set it to something, query later
 			image.alt = DEFAULT_ALT;
@@ -61,7 +66,7 @@ async function fix() {
 	for (let i = 0; i < images.length; i++) {
 		if (rateLimiter.numCalls == 6) {
 			await new Promise((resolve) => {
-				setTimeout(resolve, new Date() - rateLimiter.date);
+				setTimeout(resolve, 1000 - (new Date() - rateLimiter.date));
 			});
 
 			rateLimiter.numCalls = 0;
@@ -75,15 +80,26 @@ async function fix() {
 					if (caption != null) {
 						image.alt = caption.text;
 						IMAGES_SRC[image.src] = image.alt;
+						console.log(IMAGES_SRC);
 						rateLimiter.numCalls++;
+					} else if (caption === 'ERROR') {
+						ERROR_SRC[image.src] = true;
 					}
 				})
 			);
-		} else if (IMAGES_SRC[image.src] != undefined && IMAGES_SRC[image.src] != image.alt) {
+		} else if (
+			image.alt == DEFAULT_ALT &&
+			IMAGES_SRC[image.src] != undefined &&
+			IMAGES_SRC[image.src] != image.alt
+		) {
 			image.alt = IMAGES_SRC[image.src]; // if it's the same source, it's this caption
 		}
+
+		console.log(`done with this image`);
 	}
 
+	console.log(IMAGES_SRC);
+	console.log('this is the deal');
 	await Promise.all(promises);
 }
 
@@ -103,4 +119,4 @@ setInterval(() => {
 		fix();
 		iterations++;
 	}
-}, 1000);
+}, 2000);

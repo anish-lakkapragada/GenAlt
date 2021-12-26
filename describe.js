@@ -25,10 +25,13 @@ async function valid(url) {
 	}
 
 	// check the size of the image
-	await new Promise((resolve) => {
-		let photo = new Image();
-		photo.setAttribute('src', url);
 
+	let photo = new Image();
+	photo.setAttribute('src', url);
+
+	setTimeout(() => {}, 250); // wait 0.1s
+
+	await new Promise((resolve) => {
 		photo.onload = () => {
 			console.log(`width: ${photo.width} height: ${photo.height}`);
 			// when photo has loaded.
@@ -44,22 +47,22 @@ async function valid(url) {
 }
 
 async function describeImage(describeURL) {
-	await valid(describeURL).then(async (valid) => {
-		if (!valid) {
-			return null;
-		}
+	let canUse = await valid(describeURL);
 
-		let caption = null;
-		try {
-			caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
-			console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
-		} catch (error) {
-			console.log('Error: ' + error);
-		}
+	if (!canUse) {
+		return null;
+	}
 
-		console.log(`This is the url ${describeURL}`);
+	console.log(`This is the url ${describeURL}`);
+
+	try {
+		let caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
+		console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
 		return caption;
-	});
+	} catch (error) {
+		console.log('Error: ' + error);
+		return 'ERROR';
+	}
 }
 
 export { describeImage };
