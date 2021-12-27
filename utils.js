@@ -1,5 +1,10 @@
+/**
+ * More util functions. 
+ */
+
 const badSites = [
-	'https://www.facebook.com/'
+	'https://www.facebook.com/',
+	'https://www.etsy.com'
 ];
 
 export function badSite(location) {

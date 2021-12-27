@@ -4,6 +4,7 @@
  * Objective: 
  * - reduce amount of API calls that are unnecessary
  * - do we really need to call for each image? what if their are 1000 images on the page? 
+
  **/
 
 // add the describe.js module
@@ -34,8 +35,22 @@ function useful(text) {
 
 	if (text.length < LENGTH_MINIMUM || USELESS_PHRASES.includes(text)) {
 		return false;
-	} // calculate whether or not the alt text is even useful
-	// use metric to determine this
+	}
+
+	const titleTypes = [
+		'h1',
+		'h2'
+	];
+
+	titleTypes.forEach((type) => {
+		const titles = document.querySelectorAll(type);
+		titles.forEach((title) => {
+			if (title.textContent == text) {
+				return false;
+			}
+		});
+	});
+
 	return true;
 }
 
