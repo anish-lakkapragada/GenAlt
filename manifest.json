@@ -8,6 +8,9 @@
       "js": ["dist/main.js"]
     }
   ], 
+  "permissions": [
+    "storage"
+  ], 
   "web_accessible_resources": ["describe.js"], 
   "browser_action": {
     "default_popup": "popup-svelte/public/index.html",

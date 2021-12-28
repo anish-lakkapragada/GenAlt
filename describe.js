@@ -56,7 +56,12 @@ async function describeImage(describeURL) {
 	console.log(`This is the url ${describeURL}`);
 
 	try {
-		let caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
+		const captions = (await computerVisionClient.describeImage(describeURL, { maxCandidates: 3, language: 'en' }))
+			.captions;
+
+		const caption = captions[0];
+
+		console.log(captions);
 		console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
 		return caption;
 	} catch (error) {
