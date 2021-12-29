@@ -1,13 +1,3 @@
-/**
- * This is the javascript file to fix up the page with alt text. 
- * 	
- * Objective: 
- * - reduce amount of API calls that are unnecessary
- * - do we really need to call for each image? what if their are 1000 images on the page? 
-
- **/
-
-// add the describe.js module
 import { describeImage } from './describe.js';
 import { badSite } from './utils.js';
 
@@ -19,11 +9,12 @@ const USELESS_PHRASES = [
 	'Logo'
 ];
 
-const IMAGES_SRC = {};
+let IMAGE_ALTS = {};
+const ORIGINAL_ALTS = {}; // original alt-text
 const ERROR_SRC = {}; // images known to cause trouble
 const resetAlt = !badSite(window.location);
 
-const rateLimiter = { numCalls: 0, date: new Date() };
+const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
 
 function useful(text) {
 	// decides whether the alt text is useful or not based on the length;
@@ -62,10 +53,10 @@ function initialFix() {
 			continue;
 		}
 
-		if (!useful(image.alt) && IMAGES_SRC[image.src] == undefined) {
+		if (!useful(image.alt) && IMAGE_ALTS[image.src] == undefined) {
 			// just set it to something, query later
 			image.alt = DEFAULT_ALT;
-		} else if (resetAlt && IMAGES_SRC[image.src] == undefined) {
+		} else if (resetAlt && IMAGE_ALTS[image.src] == undefined) {
 			image.alt = DEFAULT_ALT;
 		}
 	}
@@ -88,13 +79,14 @@ async function fix(params) {
 		}
 
 		const image = images[i];
-		if (image.alt == DEFAULT_ALT && IMAGES_SRC[image.src] == undefined) {
+		if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
 			promises.push(
 				describeImage(image.src, params).then((caption) => {
 					if (caption != null) {
+						ORIGINAL_ALTS[image.src] = image.alt; // original 
 						image.alt = caption.text;
-						IMAGES_SRC[image.src] = image.alt;
-						console.log(IMAGES_SRC);
+						IMAGE_ALTS[image.src] = image.alt;
+						console.log(IMAGE_ALTS);
 						rateLimiter.numCalls++;
 					} else if (caption === 'ERROR') {
 						ERROR_SRC[image.src] = true;
@@ -103,55 +95,66 @@ async function fix(params) {
 			);
 		} else if (
 			image.alt == DEFAULT_ALT &&
-			IMAGES_SRC[image.src] != undefined &&
-			IMAGES_SRC[image.src] != image.alt
+			IMAGE_ALTS[image.src] != undefined &&
+			IMAGE_ALTS[image.src] != image.alt
 		) {
-			image.alt = IMAGES_SRC[image.src]; // if it's the same source, it's this caption
+			image.alt = IMAGE_ALTS[image.src]; // if it's the same source, it's this caption
 		}
 
 		console.log(`done with this image`);
 	}
 
-	console.log(IMAGES_SRC);
+	console.log(IMAGE_ALTS);
 	console.log('this is the deal');
 	await Promise.all(promises);
 }
 
-function main() {
-	let iterations =0;
+let pastEnabled = null; 
+let pastLanguage = null;
 
-	// create the params based on response from chrome extension. 
-	let params; 
-	let enabled; 
-	chrome.storage.sync.get(['enabled, language'], (results) => {
-		params = {maxCandidates: 1, language: results.language};
-		enabled = results.enabled; 
-	})
-	
-	if (enabled) {
-		setTimeout(() => {
-			initialFix();
-			fix(params);
-			iterations++;
-		}, 1000);
+async function main() {
+	await new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
 
-		// only run the setInterval not on the first
-		setInterval(() => {
-			if (iterations > 0) {
-				initialFix();
-				fix(params);
-				iterations++;
+			console.log("HEELOO"); 
+			console.log(typeof enabled); 
+
+			if (pastEnabled != response.enabled && pastEnabled != null) {
+				// fix all images. 
+				const images = document.querySelectorAll('img'); // access all images
+				for (let i = 0; i < images.length; i++) {
+					const image = images[i];
+					if (ORIGINAL_ALTS[image.src] != undefined) {
+						image.alt = ORIGINAL_ALTS[image.src];
+					}
+				}
 			}
-		}, 2000);
-	}
+
+			if (pastLanguage != response.language && pastLanguage != null) {
+				IMAGE_ALTS = {}; 
+				// if it's enabled, fix all images. 
+			}
+
+			if (response.enabled) {
+				initialFix(); 
+				fix({maxCandidates: 1, language: response.language});
+			}
+
+			pastLanguage = response.language; 
+			pastEnabled = response.enabled;
+
+			resolve(); 
+		});
+	});
 }
-
-// always run main when any of the keys in chrome storage change
-// or just default 
-
 
 // on load, solve all the images.
 window.addEventListener('load', main); 
 
-chrome.storage.onChanged.addListener((changes, namespace) => {main();}); // sheesh poggers 
+setInterval(main, 1500); // run this function every 1.5s 
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	console.log(request);
+	sendResponse({"from" : "content"});
+});
 

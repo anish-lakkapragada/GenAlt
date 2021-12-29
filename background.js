@@ -10,4 +10,14 @@ chrome.runtime.onInstalled.addListener(details => {
     });
 });
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.purpose === "params") {
+        chrome.storage.sync.get(['enabled', 'language'], (result) => {
+            sendResponse(result); 
+        }); 
+    }
+
+    return true; // bru why zis work? 
+}); 
+
 // TODO feedback suvey at the end 
