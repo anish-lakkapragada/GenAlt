@@ -46,7 +46,7 @@ async function valid(url) {
 	return true;
 }
 
-async function describeImage(describeURL) {
+async function describeImage(describeURL, params) {
 	let canUse = await valid(describeURL);
 
 	if (!canUse) {
@@ -56,7 +56,7 @@ async function describeImage(describeURL) {
 	console.log(`This is the url ${describeURL}`);
 
 	try {
-		const captions = (await computerVisionClient.describeImage(describeURL, { maxCandidates: 3, language: 'en' }))
+		const captions = (await computerVisionClient.describeImage(describeURL, params))
 			.captions;
 
 		const caption = captions[0];

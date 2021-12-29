@@ -1,28 +1,48 @@
-<script>
-	import Switch from "./Switch.svelte";
+<script>	
+	import "smelte/src/tailwind.css";
+	import {Switch, Select} from "smelte";
 
-	function handleMessage(event) {
-		// update chrome storage with the event here 
-	}
+	// get all values from chrome extension. 
+
+	const languages = ['English', 'Spanish','Japanese','Portuguese','Chinese'];
+	const abbreviationLang = {'en' : 'English', 'es' : 'Spanish', 'ja' : 'Japanese', 'pt' : 'Portuguese', 'zh' : 'Chinese'};
+	const langAbbrevations = {'English' : 'en', 'Spanish' : 'es', 'Japanese' : 'ja', 'Portuguese' : 'pt', 'Chinese' : 'zh'};
+	
+	let loaded = false;
+	let language, enabled; 
+	let languageUsed; 
+
+	chrome.storage.sync.get(['enabled', 'language'], (response) => {
+		language = response.language; enabled = response.enabled;
+		languageUsed = abbreviationLang[language];
+		loaded = true; 	
+	}); 
+
+	
+	$ : chrome.storage.sync.set({"enabled" : enabled});
+	$ : language = langAbbrevations[languageUsed]; 
+	$ : chrome.storage.sync.set({"language" : language});
+
+
 </script>
 
-	<div class="container">
-		<h1 class="title"> GenAlt Settings </h1>
-		<h3> plug </h3>	
-		<Switch id="on-switch" on={true} on:message={handleMessage}></Switch>
-		<h2> On / Off </h2>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	{#if loaded}
+		<div class="container">
+			<h1> GenAlt Settings </h1>	
+			<h3> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help fund future projects (stay tuned)! </h3>
+			<div class="switch-container" on:click|capture={update("state")}>
+				<Switch color="primary" bind:value={enabled}> </Switch>
+			</div>
 
-		<!-- include now a list of all languages -->
-	</div>
+			<Select label={"Translation Language"} autocomplete items={languages} bind:value={languageUsed}></Select>
+		</div>
+	{/if}
 
-<style global lang="scss">
-	@use '@material/switch/styles';
-
+<style>
 	.container {
-		text-align: center;
+		text-align: center; 
+		position: relative;
 	}
-	.title {
-		font-size: 2rem;
-	}
-
 </style>

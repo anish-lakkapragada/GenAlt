@@ -1,44 +1,25 @@
 {
   "name": "svelte-app",
   "version": "1.0.0",
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^14.0.0",
-    "@rollup/plugin-node-resolve": "^8.0.0",
-    "autoprefixer": "^10.4.0",
-    "eslint": "^7.32.0",
-    "node-sass": "^6.0.1",
-    "nollup": "^0.13.13",
-    "postcss": "^8.4.4",
-    "rollup": "^2.3.4",
-    "rollup-plugin-hot": "^0.1.0",
-    "rollup-plugin-livereload": "^2.0.0",
-    "rollup-plugin-svelte-hot": "^0.13.0",
-    "rollup-plugin-terser": "^7.0.0",
-    "sass": "^1.43.5",
-    "smui-theme": "^6.0.0-beta.4",
-    "svelte": "^3.0.0",
-    "svelte-preprocess": "^4.9.8"
-  },
-  "dependencie": {
-    "@material/button": "^13.0.0",
-    "dotenv": "^10.0.0",
-    "eslint-plugin-svelte3": "^3.2.0",
-    "sirv-cli": "^1.0.0",
-    "smelte": "^1.1.8"
-  },
+  "private": true,
   "scripts": {
     "build": "rollup -c",
-    "dev:rollup": "rollup -c -w",
-    "dev:livereload": "rollup -c -w --environment LIVERELOAD",
-    "dev:nollup": "nollup -c --hot --port 8000 --content-base ./public",
-    "dev": "npm run dev:nollup",
-    "start": "sirv public",
-    "format": "eslint --fix ."
+    "dev": "rollup -c -w",
+    "start": "sirv public --no-clear"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "rollup": "^2.3.4",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^7.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "svelte": "^3.0.0"
   },
   "dependencies": {
-    "@material/button": "^13.0.0",
-    "@material/data-table": "^13.0.0",
-    "@material/switch": "^13.0.0",
-    "material": "^0.4.3"
+    "@fullhuman/postcss-purgecss": "^4.1.3",
+    "sirv-cli": "^1.0.0",
+    "smelte": "^1.1.2"
   }
 }

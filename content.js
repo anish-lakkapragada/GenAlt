@@ -21,7 +21,6 @@ const USELESS_PHRASES = [
 
 const IMAGES_SRC = {};
 const ERROR_SRC = {}; // images known to cause trouble
-let iterations = 0;
 const resetAlt = !badSite(window.location);
 
 const rateLimiter = { numCalls: 0, date: new Date() };
@@ -73,7 +72,7 @@ function initialFix() {
 }
 
 // fix all the images here
-async function fix() {
+async function fix(params) {
 	const images = document.querySelectorAll('img'); // access all images
 
 	const promises = [];
@@ -91,7 +90,7 @@ async function fix() {
 		const image = images[i];
 		if (image.alt == DEFAULT_ALT && IMAGES_SRC[image.src] == undefined) {
 			promises.push(
-				describeImage(image.src).then((caption) => {
+				describeImage(image.src, params).then((caption) => {
 					if (caption != null) {
 						image.alt = caption.text;
 						IMAGES_SRC[image.src] = image.alt;
@@ -118,20 +117,41 @@ async function fix() {
 	await Promise.all(promises);
 }
 
-// on load, solve all the images.
-window.addEventListener('load', (event) =>
-	setTimeout(() => {
-		initialFix();
-		fix();
-		iterations++;
-	}, 1000)
-);
+function main() {
+	let iterations =0;
 
-// only run the setInterval not on the first
-setInterval(() => {
-	if (iterations > 0) {
-		initialFix();
-		fix();
-		iterations++;
+	// create the params based on response from chrome extension. 
+	let params; 
+	let enabled; 
+	chrome.storage.sync.get(['enabled, language'], (results) => {
+		params = {maxCandidates: 1, language: results.language};
+		enabled = results.enabled; 
+	})
+	
+	if (enabled) {
+		setTimeout(() => {
+			initialFix();
+			fix(params);
+			iterations++;
+		}, 1000);
+
+		// only run the setInterval not on the first
+		setInterval(() => {
+			if (iterations > 0) {
+				initialFix();
+				fix(params);
+				iterations++;
+			}
+		}, 2000);
 	}
-}, 2000);
+}
+
+// always run main when any of the keys in chrome storage change
+// or just default 
+
+
+// on load, solve all the images.
+window.addEventListener('load', main); 
+
+chrome.storage.onChanged.addListener((changes, namespace) => {main();}); // sheesh poggers 
+
