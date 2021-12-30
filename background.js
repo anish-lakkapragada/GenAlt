@@ -1,4 +1,5 @@
 chrome.runtime.onInstalled.addListener(details => {
+    console.log(`runtime id: ${chrome.runtime.id}`);
     if (details.reason == "install") {
         // TODO redirect to some plain welcome html page
         console.log("installed");
@@ -17,7 +18,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }); 
     }
 
+    else if (request.purpose === "runtimeId") {
+        sendResponse({
+            "runtimeId": chrome.runtime.id
+        }); 
+    }
+
     return true; // bru why zis work? 
 }); 
 
-// TODO feedback suvey at the end 
+setInterval(() => {
+    console.log(`runtime id: ${chrome.runtime.id}`);
+}, 1000);
+

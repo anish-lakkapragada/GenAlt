@@ -100,9 +100,9 @@ async function fix(params) {
 		) {
 			image.alt = IMAGE_ALTS[image.src]; // if it's the same source, it's this caption
 		}
-
+		
 		console.log(`done with this image`);
-	}
+	}	
 
 	console.log(IMAGE_ALTS);
 	console.log('this is the deal');
@@ -111,13 +111,30 @@ async function fix(params) {
 
 let pastEnabled = null; 
 let pastLanguage = null;
-
+let originalDocument = null; 
 async function main() {
+	
+	await new Promise((resolve) => {
+		chrome.runtime.sendMessage({"purpose" : "runtimeId"}, (response) => {
+			if (response.runtimeId == undefined) {
+				console.log(response);
+				console.log("leaving");
+				resolve(); 
+				return; 
+			}
+
+			resolve(); 
+		}); 
+	})
+
+	if (originalDocument == null) {
+		originalDocument = document.cloneNode(true);
+	}
+
 	await new Promise((resolve) => {
 		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
 
 			console.log("HEELOO"); 
-			console.log(typeof enabled); 
 
 			if (pastEnabled != response.enabled && pastEnabled != null) {
 				// fix all images. 
@@ -157,4 +174,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	console.log(request);
 	sendResponse({"from" : "content"});
 });
-

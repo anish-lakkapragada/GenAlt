@@ -12,7 +12,7 @@
 	let language; 
 	let enabled; 
 	let languageUsed; 
-
+	
 	chrome.storage.sync.get(['enabled', 'language'], (response) => {
 		language = response.language; 
 		enabled = response.enabled; 
@@ -24,11 +24,13 @@
 	}); 
 
 	$: update("language") || languageUsed; // when languageUsed updates!
-	
+	$: update("enabled") || enabled; // when enabled updates, just store it!
+
 	const update = (type) => {
+		console.log("called update with")
 		if (type === 'enabled' && !firstTime) {
 			console.log("changed value here!");
-			enabled = !enabled;
+			//enabled = !enabled;
 			chrome.storage.sync.set({'enabled' : enabled});
 		} else if (type === 'language') {
 			if (languageUsed != null) {
@@ -48,16 +50,15 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <main> 
-
 	{#if loaded}
-		<body class="w-96 h-64"> 
+		<body class="w-96 h-64 rounded-2xl"> 
 			<div class="container mode-dark text-center font-inter px-2">
 
 				<h1 id="title" class="font-bold text-3xl"> GenAlt Settings </h1>		
 				<p id="plug" class="text-sm mx-8"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. <br> <em> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help support GenAlt's services. </em> </p>
 						
 				<div class="enabled-switch" aria-label={`Switch on whether to enable or disable GenAlt. GenAlt is currently ${enabled ? "enabled" : "disabled"}. Click to ${enabled ? "disable" : "enable"} GenAlt.`} role="button" tabindex="0">
-					<Switch bind:value={enabled} onChange={update('enabled')} aria-label="this fun tho"/>
+					<Switch bind:value={enabled}> </Switch>
 				</div>
 
 				<div id="onoff" class="text-base my-2"> Enable or Disable GenAlt </div>
