@@ -73,10 +73,9 @@ export default {
 					alert     : '#ff9800',
 					blue      : '#2196f3',
 					dark      : '#212121'
-				}, // Object of colors to generate a palette from, and then all the utility classes
+				}, 
 				darkMode : true
 			}
-			// Any other props will be applied on top of default Smelte tailwind.config.js
 		}),
 
 		// we'll extract any component CSS out into
