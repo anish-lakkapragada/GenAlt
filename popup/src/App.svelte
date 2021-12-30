@@ -48,18 +48,21 @@
 	}
 </script>
 
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	
-	<div class="container">
-		<h1> GenAlt Settings </h1>	
-		<p> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help fund future projects (stay tuned)! </p>
-		
-		<Switch color="primary" bind:value={enabled} on:change={update("enabled")}> </Switch>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-		<div class="lang-select" on:change|capture={update("language")}> 
-			<Select label={"Translation Language"} items={languages} autocomplete bind:value={languageUsed}> </Select>	
-		</div>
+<div class="container">
+	<h1> GenAlt Settings </h1>	
+	<p> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help fund future projects (stay tuned)! </p>
+	
+	<div class="enabled-switch" aria-label={`Switch on whether to enable or disable GenAlt. GenAlt is currently ${enabled ? "enabled" : "disabled"}. Click to ${enabled ? "disable" : "enable"} GenAlt.`} role="button" tabindex="0">
+		<Switch bind:value={enabled} onChange={update('enabled')} aria-label="this fun tho"/>
 	</div>
+
+	<div id="onoff"> On / Off </div>
+	<div class="lang-select" on:change|capture={update("language")} aria-label={`Multiple choices on what language you want GenAlt to generate captions in. GenAlt can deliver captions in English, Spanish, Japanese, Portuguese, and Chinese. GenAlt is currently using ${languageUsed}`} tabindex="0" role="navigation">  
+		<Select label={"Translation Language"} items={languages} autocomplete bind:value={languageUsed}> </Select>	
+	</div>
+</div>
 
 <style>
 	.container {

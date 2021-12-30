@@ -113,7 +113,7 @@ let pastEnabled = null;
 let pastLanguage = null;
 
 async function main() {
-	await new Promise((resolve, reject) => {
+	await new Promise((resolve) => {
 		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
 
 			console.log("HEELOO"); 
