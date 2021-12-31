@@ -52,7 +52,7 @@
 <main> 
 	{#if loaded}
 		<body class="w-96 h-64 rounded-2xl"> 
-			<div class="container mode-dark text-center font-inter px-2">
+			<div class="container mode-dark text-center font-inter">
 
 				<h1 id="title" class="font-bold text-3xl"> GenAlt Settings </h1>		
 				<p id="plug" class="text-sm mx-8"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. <br> <em> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help support GenAlt's services. </em> </p>

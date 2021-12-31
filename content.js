@@ -112,19 +112,25 @@ async function fix(params) {
 let pastEnabled = null; 
 let pastLanguage = null;
 let originalDocument = null; 
-async function main() {
-	
+async function main() {	
 	await new Promise((resolve) => {
-		chrome.runtime.sendMessage({"purpose" : "runtimeId"}, (response) => {
-			if (response.runtimeId == undefined) {
-				console.log(response);
-				console.log("leaving");
-				resolve(); 
-				return; 
-			}
+		try {
+			chrome.runtime.sendMessage({"purpose" : "runtimeId"}, (response) => {
+				if (response.runtimeId == undefined) {
+					console.log(response);
+					console.log("leaving");
+					resolve(); 
+					return; 
+				}
 
-			resolve(); 
-		}); 
+				resolve(); 
+			});
+		} catch (e) {
+			console.log(e);
+			if (e.includes("Extension context invalidated")){
+				window.location.reload();
+			}
+		} 
 	})
 
 	if (originalDocument == null) {

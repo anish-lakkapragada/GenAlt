@@ -27,7 +27,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // bru why zis work? 
 }); 
 
-setInterval(() => {
-    console.log(`runtime id: ${chrome.runtime.id}`);
-}, 1000);
-
