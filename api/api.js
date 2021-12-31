@@ -29,11 +29,17 @@ app.get("/describeImage", async (req, res) => {
     console.log(req.query);
     const {url, maxCandidates, lang} = req.query;
  
-    await computerVisionClient.describeImage(url, {maxCandidates: parseInt(maxCandidates), language: lang}).then((response) => {
-        const captions = response.captions;
-        const caption = captions[0];
-        res.send(caption);
-    })
+    try {
+        await computerVisionClient.describeImage(url, {maxCandidates: parseInt(maxCandidates), language: lang}).then((response) => {
+            const captions = response.captions;
+            const caption = captions[0];
+            res.send(caption);
+        })
+    }
+
+    catch (err) {
+        res.send({"error": err}); // error
+    }
 });
 
 app.listen(3000)
