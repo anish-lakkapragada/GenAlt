@@ -1,5 +1,6 @@
 # GenAlt
 
+skeebo oracle 
 1) API Key Exposed (issue) => send this to oracle free-tier
 2) Test with Screen Reader
 3) LOGO + colors
