@@ -127,7 +127,7 @@ async function main() {
 			});
 		} catch (e) {
 			console.log(e);
-			if (e.includes("Extension context invalidated")){
+			if (e.message.includes("Extension context invalidated")){
 				window.location.reload();
 			}
 		} 
