@@ -12,7 +12,7 @@ const USELESS_PHRASES = [
 let IMAGE_ALTS = {};
 const ORIGINAL_ALTS = {}; // original alt-text
 const ERROR_SRC = {}; // images known to cause trouble
-const resetAlt = !badSite(window.location);
+const resetAlt = badSite(window.location);
 
 const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
 
@@ -55,6 +55,8 @@ function initialFix() {
 
 		if (!useful(image.alt) && IMAGE_ALTS[image.src] == undefined) {
 			// just set it to something, query later
+			console.log(useful(image.alt));
+			console.log("this src useless: " + image.src); 
 			image.alt = DEFAULT_ALT;
 		} else if (resetAlt && IMAGE_ALTS[image.src] == undefined) {
 			image.alt = DEFAULT_ALT;
@@ -82,15 +84,22 @@ async function fix(params) {
 		if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
 			promises.push(
 				describeImage(image.src, params).then((caption) => {
-					if (caption != null) {
+					if (caption?.text != null) {
 						ORIGINAL_ALTS[image.src] = image.alt; // original 
 						image.alt = caption.text;
 						IMAGE_ALTS[image.src] = image.alt;
 						console.log(IMAGE_ALTS);
-						rateLimiter.numCalls++;
 					} else if (caption === 'ERROR') {
 						ERROR_SRC[image.src] = true;
+						image.alt = ORIGINAL_ALTS[image.src];
 					}
+
+					else if (caption === null) {
+						ERROR_SRC[image.src] = true;
+						image.alt = ORIGINAL_ALTS[image.src] || "";
+					}
+
+					rateLimiter.numCalls++;
 				})
 			);
 		} else if (

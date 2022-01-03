@@ -31,19 +31,20 @@ async function valid(url) {
 
 	setTimeout(() => {}, 250); // wait 0.1s
 
+	let result = true; 
 	await new Promise((resolve) => {
 		photo.onload = () => {
 			console.log(`width: ${photo.width} height: ${photo.height}`);
 			// when photo has loaded.
-			if (photo.width < 50 || photo.height < 50) {
-				return false;
+			if (photo.width < 100 || photo.height < 100) {
+				result = false;
 			}
+			resolve();
 		};
 
-		resolve();
 	});
 
-	return true;
+	return result;
 }
 
 async function describeImage(describeURL, params) {
