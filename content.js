@@ -1,3 +1,8 @@
+/**  
+ * Make sure that we don't send too many requests. 
+ * Only send requests for images that actually that need them. 
+ * 
+*/
 import { describeImage } from './describe.js';
 import { badSite } from './utils.js';
 
