@@ -14,6 +14,8 @@ const USELESS_PHRASES = [
 	'Logo'
 ];
 
+
+let NEED_OCR_SRCS = []; 
 const resetAlt = badSite(window.location);
 let IMAGE_ALTS = {};
 let ORIGINAL_ALTS = {}; // original alt-text
@@ -66,6 +68,8 @@ function initialFix() {
 		} else if (resetAlt && IMAGE_ALTS[image.src] == undefined) {
 			image.alt = DEFAULT_ALT;
 		}
+
+		ORIGINAL_ALTS[image.src] = image.alt;
 	}
 }
 
@@ -73,6 +77,7 @@ function initialFix() {
 async function fix(params) {
 	const images = document.querySelectorAll('img'); // access all images
 
+	NEED_OCR_SRCS = [];
 	const promises = [];
 
 	for (let i = 0; i < images.length; i++) {
@@ -93,21 +98,18 @@ async function fix(params) {
 						ERROR_SRCS[image.src] = true;
 						image.alt = ORIGINAL_ALTS[image.src] || "";
 					}
-					
+
 					else if (needsOCR(caption.text)) {
-						console.log("HEERRE");
-						ORIGINAL_ALTS[image.src] = image.alt; // original 
-						OCR(image.src).then(ocr => {
-							console.log("this is ocr : " + ocr); 
-							image.alt = ocr; 
-							IMAGE_ALTS[image.src] = image.alt;
-							console.log("ran OCR"); 
-						})
+						promises.push(OCR(image.src).then(text => {
+							if (text != null) {
+								image.alt = text; 
+								IMAGE_ALTS[image.src] = text; 
+							}
+						}))
 					}
 
 					else if (caption?.text != null) {			
 						console.log(`${caption.text} doesn't require no ocr`); 
-						ORIGINAL_ALTS[image.src] = image.alt; // original 
 						image.alt = caption.text;
 						IMAGE_ALTS[image.src] = image.alt;
 						console.log(IMAGE_ALTS);
@@ -126,14 +128,13 @@ async function fix(params) {
 		) {
 			image.alt = IMAGE_ALTS[image.src]; // if it's the same source, it's this caption
 		}
+
 		
-		console.log(`done with this image`);
 	}	
 
-	console.log(IMAGE_ALTS);
-	console.log('this is the deal');
 	await Promise.all(promises);
 }
+
 
 let pastEnabled = null; 
 let pastLanguage = null;
@@ -210,6 +211,7 @@ window.addEventListener('load', async () => {
 
 setInterval(main, 1500); // run this function every 1.5s 
 setInterval(() => {updateData(false);}, 20 * 60 * 1000); // update the data every 20 mins
+
 
 async function updateData(updateStoredImages) {
 	// update background.js chrome.storage with new alts 

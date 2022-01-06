@@ -4,7 +4,8 @@ module.exports = {
 	entry   : [
 		'./content.js',
 		'./describe.js',
-		'./utils.js'
+		'./utils.js',
+		'./OCR.js'
 	],
 	plugins : [
 		new dotenv()

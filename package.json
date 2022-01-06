@@ -11,6 +11,7 @@
     "dependencies": {
         "@azure/cognitiveservices-computervision": "^8.1.0",
         "@azure/ms-rest-js": "^2.6.0",
+        "@google-cloud/vision": "^2.4.1",
         "@sveltejs/vite-plugin-svelte": "^1.0.0-next.33",
         "async": "^3.2.2",
         "cloc": "^2.9.0",

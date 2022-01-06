@@ -1,9 +1,11 @@
+/**
+ * OCR for Testing
+*/
+
 const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
 const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
 
-const sleep = require('util').promisify(setTimeout);
-
-const key = "6a6e824683764779a1b2b20129a9bfa1";
+const key = "6a6e824683764779a1b2b20129a9bfa1"; 
 const endpoint = 'https://genalt-api.cognitiveservices.azure.com/';
 
 const computerVisionClient = new ComputerVisionClient(
@@ -11,7 +13,7 @@ const computerVisionClient = new ComputerVisionClient(
 	endpoint
 );
 
-export async function OCR(url) {
+async function OCR(url) {
 	console.log('DANK');
 
 	// To recognize text in a local image, replace client.read() with readTextInStream() as shown:
@@ -43,7 +45,7 @@ export async function OCR(url) {
 
 	console.log('WHATS POPPIN');
 
-	let sentences = 'OCR Description: ';
+	let sentences = '';
 	for (const line of ret[0].lines) {
 		let sentence = '';
 		for (const word of line.words) {
@@ -57,31 +59,5 @@ export async function OCR(url) {
 	return sentences;
 }
 
-export function needsOCR(originalCaption) {
-	// if these alts are so bad, use OCRs.
-	if (originalCaption == null) {
-		return false;
-	}
+OCR('https://moderatorsampleimages.blob.core.windows.net/samples/sample2.jpg');
 
-	const USELESS_ALTS = [
-		'Text'.toUpperCase(),
-		'Image'.toUpperCase(),
-		'Application'.toUpperCase(),
-		'Logo'.toUpperCase(),
-		'Graphical Interface'.toUpperCase()
-	];
-
-	const caption = originalCaption.toUpperCase();
-
-	if (USELESS_ALTS.includes(caption)) {
-		return true;
-	}
-
-	for (const USELESS_ALT of USELESS_ALTS) {
-		if (USELESS_ALT.includes(caption)) {
-			return true;
-		}
-	}
-
-	return false;
-}
