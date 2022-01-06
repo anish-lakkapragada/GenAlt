@@ -77,35 +77,3 @@
 		</html> 
 	{/if}
 </main>
-
-<style>
-	
-	/*
-	#title{
-		font-size: 3rem; 
-		font-weight: bold;
-	}
-
-	#plug {
-		margin-top: 0.5rem;
-		margin-left: 2rem;
-		margin-right: 2rem;
-		font-size: 1.5rem;
-	}
-
-	.enabled-switch {
-		margin-top: 0.5rem;
-	}
-	
-	.container {
-		text-align: center !important; 
-		margin: 5rem;
-		padding: 1rem;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}*/
-</style>

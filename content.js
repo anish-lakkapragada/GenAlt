@@ -1,10 +1,10 @@
 /**  
  * Make sure that we don't send too many requests. 
  * Only send requests for images that actually that need them. 
- * 
 */
 import { describeImage } from './describe.js';
 import { badSite } from './utils.js';
+import {OCR, needsOCR} from "./OCR.js"; 
 
 const LENGTH_MINIMUM = 15;
 const DEFAULT_ALT = 'Generating Caption By GenAlt';
@@ -14,10 +14,10 @@ const USELESS_PHRASES = [
 	'Logo'
 ];
 
-let IMAGE_ALTS = {};
-const ORIGINAL_ALTS = {}; // original alt-text
-const ERROR_SRC = {}; // images known to cause trouble
 const resetAlt = badSite(window.location);
+let IMAGE_ALTS = {};
+let ORIGINAL_ALTS = {}; // original alt-text
+let ERROR_SRCS = {}; // images known to cause trouble
 
 const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
 
@@ -54,7 +54,7 @@ function initialFix() {
 	for (let i = 0; i < images.length; i++) {
 		// iterate through all the images
 		const image = images[i];
-		if (ERROR_SRC[image.src] != undefined) {
+		if (ERROR_SRCS[image.src] != undefined) {
 			continue;
 		}
 
@@ -89,19 +89,31 @@ async function fix(params) {
 		if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
 			promises.push(
 				describeImage(image.src, params).then((caption) => {
-					if (caption?.text != null) {
+					if (caption === null) {
+						ERROR_SRCS[image.src] = true;
+						image.alt = ORIGINAL_ALTS[image.src] || "";
+					}
+					
+					else if (needsOCR(caption.text)) {
+						console.log("HEERRE");
+						ORIGINAL_ALTS[image.src] = image.alt; // original 
+						OCR(image.src).then(ocr => {
+							console.log("this is ocr : " + ocr); 
+							image.alt = ocr; 
+							IMAGE_ALTS[image.src] = image.alt;
+							console.log("ran OCR"); 
+						})
+					}
+
+					else if (caption?.text != null) {			
+						console.log(`${caption.text} doesn't require no ocr`); 
 						ORIGINAL_ALTS[image.src] = image.alt; // original 
 						image.alt = caption.text;
 						IMAGE_ALTS[image.src] = image.alt;
 						console.log(IMAGE_ALTS);
 					} else if (caption === 'ERROR') {
-						ERROR_SRC[image.src] = true;
+						ERROR_SRCS[image.src] = true;
 						image.alt = ORIGINAL_ALTS[image.src];
-					}
-
-					else if (caption === null) {
-						ERROR_SRC[image.src] = true;
-						image.alt = ORIGINAL_ALTS[image.src] || "";
 					}
 
 					rateLimiter.numCalls++;
@@ -151,10 +163,14 @@ async function main() {
 		originalDocument = document.cloneNode(true);
 	}
 
+	// do the work (first check if we should) on all the images. 
 	await new Promise((resolve) => {
 		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
 
-			console.log("HEELOO"); 
+			// we may know some of this 
+			IMAGE_ALTS = Object.assign(IMAGE_ALTS, response.IMAGE_ALTS);
+			ORIGINAL_ALTS = Object.assign(ORIGINAL_ALTS, response.ORIGINAL_ALTS);
+			ERROR_SRCS = Object.assign(ERROR_SRCS, response.ERROR_SRCS);
 
 			if (pastEnabled != response.enabled && pastEnabled != null) {
 				// fix all images. 
@@ -169,6 +185,7 @@ async function main() {
 
 			if (pastLanguage != response.language && pastLanguage != null) {
 				IMAGE_ALTS = {}; 
+				console.log("we here"); 
 				// if it's enabled, fix all images. 
 			}
 
@@ -186,11 +203,41 @@ async function main() {
 }
 
 // on load, solve all the images.
-window.addEventListener('load', main); 
+window.addEventListener('load', async () => {
+	await updateData(true); // first receive the stuff 
+	await main(); 
+}); 
 
 setInterval(main, 1500); // run this function every 1.5s 
+setInterval(() => {updateData(false);}, 20 * 60 * 1000); // update the data every 20 mins
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	console.log(request);
-	sendResponse({"from" : "content"});
-});
+async function updateData(updateStoredImages) {
+	// update background.js chrome.storage with new alts 
+
+	await new Promise((resolve) => {
+		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
+			if (response.IMAGE_ALTS != IMAGE_ALTS) {
+				chrome.runtime.sendMessage({'purpose': 'update', 'needUpdate' : 'IMAGE_ALTS', "IMAGE_ALTS" : IMAGE_ALTS});
+				if (updateStoredImages) {
+					IMAGE_ALTS = response.IMAGE_ALTS;
+				}
+			}
+
+			else if (response.ORIGINAL_ALTS != ORIGINAL_ALTS) {
+				chrome.runtime.sendMessage({'purpose': 'update', 'needUpdate' : 'ORIGINAL_ALTS', "ORIGINAL_ALTS" : ORIGINAL_ALTS});
+				if (updateStoredImages) {
+					ORIGINAL_ALTS = response.ORIGINAL_ALTS;
+				}
+			}
+
+			else if (response.ERROR_SRCS != ERROR_SRCS) {
+				chrome.runtime.sendMessage({'purpose': 'update', 'needUpdate' : 'ERROR_SRCS', "ERROR_SRCS" : ERROR_SRCS});
+				if (updateStoredImages) {
+					ERROR_SRCS = response.ERROR_SRCS;
+				}
+			}
+
+			resolve(); 
+		});
+	})
+}
