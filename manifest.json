@@ -13,7 +13,7 @@
     "storage"
   ], 
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["src/background.js"],
     "persistent": true
   },
   "browser_action": {
