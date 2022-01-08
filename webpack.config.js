@@ -2,10 +2,10 @@ const dotenv = require('dotenv-webpack');
 
 module.exports = {
 	entry   : [
-		'./content.js',
-		'./describe.js',
-		'./utils.js',
-		'./OCR.js'
+		'./src/content.js',
+		'./src/describe.js',
+		'./src/utils.js',
+		'./src/OCR.js'
 	],
 	plugins : [
 		new dotenv()

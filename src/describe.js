@@ -3,16 +3,8 @@
  * Bundled with the content script. 
  */
 
-const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
-const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
-
-const key = process.env.SUBSCRIPTION_KEY; // to not show it in public code
-const endpoint = 'https://genalt-api.cognitiveservices.azure.com/';
-
-const computerVisionClient = new ComputerVisionClient(
-	new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': key } }),
-	endpoint
-);
+import {getClient} from "./loadAzure.js"; 
+const computerVisionClient = getClient();
 
 // is the image a valid image and is it the right size?
 async function valid(url) {
