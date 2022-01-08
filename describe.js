@@ -36,7 +36,7 @@ async function valid(url) {
 		photo.onload = () => {
 			console.log(`width: ${photo.width} height: ${photo.height}`);
 			// when photo has loaded.
-			if (photo.width < 100 || photo.height < 100) {
+			if (photo.width < 75 || photo.height < 75) {
 				result = false;
 			}
 			resolve();

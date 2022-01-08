@@ -66,9 +66,15 @@ export function needsOCR(originalCaption) {
 	const USELESS_ALTS = [
 		'Text'.toUpperCase(),
 		'Image'.toUpperCase(),
+        'Letter'.toUpperCase(),
 		'Application'.toUpperCase(),
 		'Logo'.toUpperCase(),
-		'Graphical Interface'.toUpperCase()
+        'Diagram'.toUpperCase(),
+		'chart'.toUpperCase(),
+		'graph'.toUpperCase(), 
+		'graphical user interface, website'.toUpperCase(), 
+        'graphical user interface, text, application'.toUpperCase(),
+        'graphical user interface'.toUpperCase()
 	];
 
 	const caption = originalCaption.toUpperCase();
