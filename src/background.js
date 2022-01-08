@@ -13,9 +13,15 @@ chrome.runtime.onInstalled.addListener(details => {
         "language": "en",            
     });
 
-    for (item of ['IMAGE_ALTS', 'ERROR_SRCS', 'ORIGINAL_ALTS']) {
-        chrome.storage.sync.set({item: {}});
-    }
+
+    chrome.storage.sync.set({"IMAGE_ALTS": {}}); 
+    chrome.storage.sync.set({"ORIGINAL_ALTS": {}});
+    chrome.storage.sync.set({"ERROR_SRCS": {}});
+
+    chrome.storage.sync.get(['IMAGE_ALTS', 'ERROR_SRCS', 'ORIGINAL_ALTS'], (response) => {
+        console.log("this is the response + "); 
+        console.log(response); 
+    })
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

@@ -7,6 +7,8 @@ const badSites = [
 	'https://www.etsy.com'
 ];
 
+const LENGTH_MINIMUM = 15;
+
 const USELESS_PHRASES = [
 	'No photo description available.',
 	'Image',

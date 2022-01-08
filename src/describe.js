@@ -26,8 +26,6 @@ async function valid(url) {
 	let result = true; 
 	await new Promise((resolve) => {
 		photo.onload = () => {
-			console.log(`width: ${photo.width} height: ${photo.height}`);
-			// when photo has loaded.
 			if (photo.width < 75 || photo.height < 75) {
 				result = false;
 			}

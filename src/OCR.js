@@ -16,23 +16,17 @@ export async function OCR(url) {
 		return null;
 	}
 
-	console.log('we alive');
 
 	// Operation ID is last path segment of operationLocation (a URL)
 	let operation = result.operationLocation.split('/').slice(-1)[0];
 
-    console.log("oh how u doin");
 	// Wait for read recognition to complete
 	// result.status is initially undefined, since it's the result of read
 	while (result.status !== 'succeeded') {
 		setInterval(() => {1000});
 		result = await computerVisionClient.getReadResult(operation);
-        console.log("waiting"); 
-        console.log("the status is " + result.status);
 	}
 	const ret = result.analyzeResult.readResults; // Return the first page of result. Replace [0] with the desired page if this is a multi-page file such as .pdf or .tiff.
-
-	console.log('WHATS POPPIN');
 
 	let sentences = 'OCR Description: ';
 	for (const line of ret[0].lines) {
