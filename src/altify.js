@@ -202,4 +202,36 @@ async function updateData(updateStoredImages) {
 	})
 }
 
-export {initialFix, fix, updateData, main };
+/**
+ * ON LOAD: 
+ * 1) store all image objects with src
+ * 2) describe the port.onMessage event listener
+* 3) fix these images!
+ */
+
+const SRC_IMAGES = {}; 
+for (const image of document.querySelectorAll("img")) {
+	if (SRC_IMAGES[image.src] == undefined) {
+		SRC_IMAGES[image.src] = [image]; 
+		continue; 
+	}
+
+	SRC_IMAGES[image.src].push(image);
+}
+
+const port = chrome.runtime.connect({"name" : "background"});
+port.onMessage.addListener((msg) => {
+	const {url, caption} = msg; 
+	const images = SRC_IMAGES[url];
+	for (const image of images) {
+		image.alt = caption; 
+	}
+}); 
+
+window.addEventListener('load', async () => {
+	await updateData(true); // first receive the stuff 
+	await main(); 
+}); 
+
+setInterval(main, 1500); // run this function every 1.5s 
+setInterval(() => {updateData(false);}, 3 * 60 * 1000); // update the data every 3 mins

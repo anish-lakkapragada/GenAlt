@@ -13,7 +13,7 @@
 	let enabled; 
 	let languageUsed; 
 	
-	chrome.storage.sync.get(['enabled', 'language'], (response) => {
+	chrome.storage.local.get(['enabled', 'language'], (response) => {
 		language = response.language; 
 		enabled = response.enabled; 
 		languageUsed = abbreviationLang[language];
@@ -31,13 +31,13 @@
 		if (type === 'enabled' && !firstTime) {
 			console.log("changed value here!");
 			//enabled = !enabled;
-			chrome.storage.sync.set({'enabled' : enabled});
+			chrome.storage.local.set({'enabled' : enabled});
 		} else if (type === 'language') {
 			if (languageUsed != null) {
 				console.log(`new language used : ${languageUsed}`);
 				language = langAbbrevations[languageUsed];
 				console.log(`this is the new language ${language}`);
-				chrome.storage.sync.set({'language' : language});
+				chrome.storage.local.set({'language' : language});
 			}
 		}
 

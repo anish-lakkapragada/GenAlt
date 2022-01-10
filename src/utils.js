@@ -12,6 +12,9 @@ const USELESS_PHRASES = [
 	'Image',
 	'Logo'
 ];
+
+const LENGTH_MINIMUM = 15; 
+
 export function useful(text) {
 	if (text == null) {
 		return false;
