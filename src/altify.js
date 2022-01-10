@@ -209,7 +209,6 @@ async function updateData(updateStoredImages) {
 	})
 }
 
-<<<<<<< HEAD
 /**
  * ON LOAD: 
  * 1) store all image objects with src
@@ -237,41 +236,9 @@ port.onMessage.addListener((msg) => {
 }); 
 
 window.addEventListener('load', async () => {
-=======
-
-let curUrl = null; 
-setInterval(() => {
-	if (window.location.href !== curUrl) {
-		console.log("resetting here!");
-		console.log(`this is cur Url : ${curUrl}`); 
-		console.log(`and this is the location: ${window.location.href}`);
-		SUCCESSFUL_CAPTIONS = 0; 
-		curUrl = window.location.href;
-	}
-}, 1500); 
-
-// on load, solve all the images.
-window.addEventListener('load', async () => {
-	console.log("waiting here"); 
-	console.log(IMAGE_ALTS);
-	await new Promise((resolve) => {
-		IMAGE_ALTS = {};
-		ORIGINAL_ALTS = {};
-		ERROR_SRCS = {};
-		
-		curUrl = window.location.href; 
-
-		resolve();
-	})
->>>>>>> 652e9349404b8541006e626f9cc82987067f99aa
 	await updateData(true); // first receive the stuff 
 	await main(); 
 }); 
 
 setInterval(main, 1500); // run this function every 1.5s 
-<<<<<<< HEAD
 setInterval(() => {updateData(false);}, 3 * 60 * 1000); // update the data every 3 mins
-=======
-setInterval(() => {console.log(SUCCESSFUL_CAPTIONS)}, 1500); // run this function every 1.5s
-setInterval(() => {updateData(false);}, 20 * 60 * 1000); // update the data every 20 mins
->>>>>>> 652e9349404b8541006e626f9cc82987067f99aa
