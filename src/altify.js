@@ -1,8 +1,6 @@
 /**
- * Script with all the functions needed to make the page 
- * have alt-text. 
+ * Content Script to Run. 
  */
-
 import { describeImage } from './describe.js';
 import { badSite, useful } from './utils.js';
 import {OCR, needsOCR} from "./OCR.js"; 
@@ -11,12 +9,12 @@ const DEFAULT_ALT = 'Generating Caption By GenAlt';
 
 const resetAlt = badSite(window.location);
 let IMAGE_ALTS = {};
-let ORIGINAL_ALTS = {}; // original alt-text
 let ERROR_SRCS = {}; // images known to cause trouble
+let ORIGINAL_ALTS = {}; 
 
+let SUCCESSFUL_CAPTIONS = 0; 
+const MAX_CAPTIONS_DELIVERED = 300; 
 
-let REQUESTS_SENT = 0;
-let NUM_REQUESTS_MAX = 250;
 const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
 
 function initialFix() {
@@ -44,7 +42,6 @@ function initialFix() {
 // fix all the images here
 async function fix(params) {
 	const images = document.querySelectorAll('img'); // access all images
-
 	const promises = [];
 
 	for (let i = 0; i < images.length; i++) {
@@ -57,6 +54,10 @@ async function fix(params) {
 			rateLimiter.date = new Date();
 		}
 
+		if (SUCCESSFUL_CAPTIONS >= MAX_CAPTIONS_DELIVERED) {
+			break; // rip dawg 
+		}
+
 		const image = images[i];
 		if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
 			promises.push(
@@ -64,12 +65,14 @@ async function fix(params) {
 					if (caption === null) {
 						ERROR_SRCS[image.src] = true;
 						image.alt = ORIGINAL_ALTS[image.src] || "";
+						SUCCESSFUL_CAPTIONS++; 
 					}
 
 					else if (needsOCR(caption.text)) {
 						promises.push(OCR(image.src).then(text => {
 							if (text != null) {
 								image.alt = text; 
+								SUCCESSFUL_CAPTIONS++; 
 								IMAGE_ALTS[image.src] = text; 
 							}
 						}))
@@ -94,16 +97,18 @@ async function fix(params) {
 			IMAGE_ALTS[image.src] != image.alt
 		) {
 			image.alt = IMAGE_ALTS[image.src]; // if it's the same source, it's this caption
-		}	
+		}
+
+		
 	}	
 
 	await Promise.all(promises);
 }
 
+
 let pastEnabled = null; 
 let pastLanguage = null;
 let originalDocument = null; 
-
 async function main() {	
 	await new Promise((resolve) => {
 		try {
@@ -133,6 +138,9 @@ async function main() {
 	await new Promise((resolve) => {
 		chrome.runtime.sendMessage({"purpose" : "params"}, (response) => {
 
+			console.log(`this is current image alts`); 
+			console.log(IMAGE_ALTS);  
+
 			// we may know some of this 
 			IMAGE_ALTS = Object.assign(IMAGE_ALTS, response.IMAGE_ALTS);
 			ORIGINAL_ALTS = Object.assign(ORIGINAL_ALTS, response.ORIGINAL_ALTS);
@@ -151,8 +159,7 @@ async function main() {
 
 			if (pastLanguage != response.language && pastLanguage != null) {
 				IMAGE_ALTS = {}; 
-				REQUESTS_SENT = 0; 
-				NUM_REQUESTS_MAX = Math.round(NUM_REQUESTS_MAX / 2); // exponential decay 
+				console.log("we here"); 
 				// if it's enabled, fix all images. 
 			}
 
@@ -169,6 +176,8 @@ async function main() {
 	});
 }
 
+
+
 async function updateData(updateStoredImages) {
 	// update background.js chrome.storage with new alts 
 
@@ -178,8 +187,6 @@ async function updateData(updateStoredImages) {
 				chrome.runtime.sendMessage({'purpose': 'update', 'needUpdate' : 'IMAGE_ALTS', "IMAGE_ALTS" : IMAGE_ALTS});
 				if (updateStoredImages) {
 					IMAGE_ALTS = response.IMAGE_ALTS;
-					console.log("loaded IMAGE_ALTS"); 
-					setInterval(() => {}, 1000 * 10); 
 				}
 			}
 
@@ -202,6 +209,7 @@ async function updateData(updateStoredImages) {
 	})
 }
 
+<<<<<<< HEAD
 /**
  * ON LOAD: 
  * 1) store all image objects with src
@@ -229,9 +237,41 @@ port.onMessage.addListener((msg) => {
 }); 
 
 window.addEventListener('load', async () => {
+=======
+
+let curUrl = null; 
+setInterval(() => {
+	if (window.location.href !== curUrl) {
+		console.log("resetting here!");
+		console.log(`this is cur Url : ${curUrl}`); 
+		console.log(`and this is the location: ${window.location.href}`);
+		SUCCESSFUL_CAPTIONS = 0; 
+		curUrl = window.location.href;
+	}
+}, 1500); 
+
+// on load, solve all the images.
+window.addEventListener('load', async () => {
+	console.log("waiting here"); 
+	console.log(IMAGE_ALTS);
+	await new Promise((resolve) => {
+		IMAGE_ALTS = {};
+		ORIGINAL_ALTS = {};
+		ERROR_SRCS = {};
+		
+		curUrl = window.location.href; 
+
+		resolve();
+	})
+>>>>>>> 652e9349404b8541006e626f9cc82987067f99aa
 	await updateData(true); // first receive the stuff 
 	await main(); 
 }); 
 
 setInterval(main, 1500); // run this function every 1.5s 
+<<<<<<< HEAD
 setInterval(() => {updateData(false);}, 3 * 60 * 1000); // update the data every 3 mins
+=======
+setInterval(() => {console.log(SUCCESSFUL_CAPTIONS)}, 1500); // run this function every 1.5s
+setInterval(() => {updateData(false);}, 20 * 60 * 1000); // update the data every 20 mins
+>>>>>>> 652e9349404b8541006e626f9cc82987067f99aa
