@@ -54,7 +54,7 @@ async function describeImage(describeURL, params) {
 
 		console.log(captions);
 		console.log(`This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`);
-		return caption;
+		return caption.text;
 	} catch (error) {
 		console.log('Error: ' + error);
 		return 'ERROR';

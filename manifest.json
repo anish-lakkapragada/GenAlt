@@ -5,16 +5,15 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/main.js"],
+      "js": ["dist/altify.bundle.js"],
       "all_frames": true
     }
   ], 
   "permissions": [
-    "storage", 
-    "https://poggers-image-captioning-api.cognitiveservices.azure.com"
+    "storage"
   ], 
   "background": {
-    "scripts": ["src/background.js"],
+    "scripts": ["dist/background.bundle.js"],
     "persistent": true
   },
   "browser_action": {
