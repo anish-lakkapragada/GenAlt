@@ -1,7 +1,8 @@
 
 # GenAlt - Generated Image Descriptions for BVI
 
-  
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+![Total Lines](https://img.shields.io/tokei/lines/github/anish-lakkapragada/GenAlt)
 
 The Blind and Visually Impaired (BVI) rely on alt-text, image descriptions, to experience the trillions of images on the internet. Unfortunately most of the time, these descriptions aren't there rendering most images inaccessible. **GenAlt is a browser extension to generate these image descriptions through AI for the BVI**.
 
