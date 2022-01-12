@@ -2,9 +2,8 @@
 *.env
 /dist/
 dist/
+*.DS_Store
 popup/public
 popup/scripts
-/popup/public/
-/popup/scripts/
 popup/node_modules
-package-lock.json
+/package-lock.json
