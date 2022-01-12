@@ -2,3 +2,6 @@
 *.env
 /dist/
 dist/
+popup/public
+popup/scripts
+package-lock.json
