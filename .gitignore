@@ -6,4 +6,3 @@ dist/
 popup/public
 popup/scripts
 popup/node_modules
-/package-lock.json
