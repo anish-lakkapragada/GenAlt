@@ -17,8 +17,11 @@ chrome.runtime.onConnect.addListener((p) => {
   console.log(`the name for this port is: ${port.name}`);
   port.onMessage.addListener(async (msg) => {
     const { url, language } = msg;
+    console.log(`using this language: ${language}`);
     if (rateLimiter.numCalls == 6) {
+      console.log('waiting');
       await new Promise((resolve) => setTimeout(resolve, 1000 - (new Date() - rateLimiter.date)));
+      console.log('done waiting');
       rateLimiter.numCalls = 0;
       rateLimiter.date = new Date();
     }
@@ -75,6 +78,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         'ORIGINAL_ALTS'
       ],
       (result) => {
+        console.log('this lang from background script: ' + result.language);
         sendResponse(result);
       }
     );
@@ -93,7 +97,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   return true; // bru why zis work?
 });
-
-/**
- * Solve the error with the post disconnection. 
- */

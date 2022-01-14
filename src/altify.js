@@ -41,6 +41,7 @@ port.onMessage.addListener((msg) => {
     helped = true; 
     IMAGE_ALTS[image.src] = caption; 
     image.alt = caption; // for the lucky many.
+    console.log(`setting the alt to : ${caption}`);
   }
 
   if (helped) {
@@ -78,7 +79,9 @@ function fix(params) {
       console.log(`exceeded limit: ${Object.keys(IMAGE_ALTS).length}`);
       continue; 
     }
+
     if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
+      console.log(`running again on: ${image.src}`);
       // first make sure it's in the images list
       if (SRC_IMAGES[image.src] == undefined) {
         SRC_IMAGES[image.src] = [image]; 
@@ -90,6 +93,21 @@ function fix(params) {
 			IMAGE_ALTS[image.src] != image.alt
     ) {
       image.alt = IMAGE_ALTS[image.src]; // if it's the same source, it's this caption
+    }
+  }
+}
+
+function revertAlt(setDefault) {
+  const images = document.querySelectorAll('img'); // access all images
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    if (ORIGINAL_ALTS[image.src] != undefined) {
+      if (setDefault) {
+        image.alt = DEFAULT_ALT;
+        continue;
+      }
+      
+      image.alt = ORIGINAL_ALTS[image.src];
     }
   }
 }
@@ -135,22 +153,17 @@ async function main() {
 
       if (pastEnabled != response.enabled && pastEnabled != null) {
         // fix all images.
-        const images = document.querySelectorAll('img'); // access all images
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          if (ORIGINAL_ALTS[image.src] != undefined) {
-            image.alt = ORIGINAL_ALTS[image.src];
-          }
-        }
+        revertAlt(); 
       }
 
       if (pastLanguage != response.language && pastLanguage != null) {
         IMAGE_ALTS = {};
-        console.log('we here');
-        // if it's enabled, fix all images.
+        SUCCESSFUL_CAPTIONS = 0; 
+        revertAlt(true);
       }
 
       if (response.enabled) {
+        console.log('fixing it up!');
         initialFix();
         fix({ maxCandidates: 1, language: response.language });
       }
@@ -202,13 +215,19 @@ function updateImages() {
       ];
       continue;
     }
-
     SRC_IMAGES[image.src].push(image);
+  }
+}
+
+function storeOriginalAlts() {
+  for (const image of document.querySelectorAll('img')) {
+    ORIGINAL_ALTS[image.src] = image.alt;
   }
 }
 
 window.addEventListener('load', async () => {
   updateImages();
+  storeOriginalAlts();
   await updateData(true); // first receive the stuff
   await main();
 });

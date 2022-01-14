@@ -2,10 +2,10 @@
  * Script to load azure
  */
 
-export function getClient() {
-  const ComputerVisionClient = require('@azure/cognitiveservices-computervision').ComputerVisionClient;
-  const ApiKeyCredentials = require('@azure/ms-rest-js').ApiKeyCredentials;
+import {ComputerVisionClient} from '@azure/cognitiveservices-computervision';
+import { ApiKeyCredentials } from '@azure/ms-rest-js';
 
+export function getClient() {
   const key = process.env.SUBSCRIPTION_KEY;
   const endpoint = 'https://poggers-image-captioning-api.cognitiveservices.azure.com/';
 

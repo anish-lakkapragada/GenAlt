@@ -40,6 +40,7 @@ async function describeImage(describeURL, params) {
   let canUse = await valid(describeURL);
 
   if (!canUse) {
+    console.log(`this url not valid: ${describeURL}`);
     return null;
   }
 

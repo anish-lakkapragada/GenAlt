@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import dotenv from 'rollup-plugin-dotenv';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -33,10 +34,13 @@ export default [
     output: {
       file: 'dist/altify.bundle.js',
     }, 
-    plugins: [resolve({
-      browser: true, 
-      dedupe: ['@azure/ms-rest-js', '@azure/cognitiveservices-computervision']
-    })]
+    plugins: [
+      dotenv(), 
+      resolve({
+        browser: true, 
+        dedupe: ['@azure/ms-rest-js', '@azure/cognitiveservices-computervision']
+      }), 
+      production && terser()]
   },
   {
     input: 'src/background.js', 
@@ -45,10 +49,12 @@ export default [
       file: 'dist/background.bundle.js'
     }, 
     plugins: [
+      dotenv(), 
       resolve({
         browser: true, 
         dedupe: ['@azure/ms-rest-js', '@azure/cognitiveservices-computervision']
       }),
+      commonjs(), 
       production && terser(), 
     ]
   }, 
