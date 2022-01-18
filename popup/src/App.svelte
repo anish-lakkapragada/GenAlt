@@ -7,6 +7,9 @@
 	const abbreviationLang = {'en' : 'English', 'es' : 'Spanish', 'ja' : 'Japanese', 'pt' : 'Portuguese', 'zh' : 'Chinese'};
 	const langAbbrevations = {'English' : 'en', 'Spanish' : 'es', 'Japanese' : 'ja', 'Portuguese' : 'pt', 'Chinese' : 'zh'};
 	
+	const discordLink = 'https://discord.com/invite/Xcft8CrXRq'; 
+	const githubLink = 'https://github.com/anish-lakkapragada/GenAlt';
+
 	let loaded = false;
 	let firstTime = true; 
 	let language; 
@@ -57,7 +60,15 @@
 				<div class="container font-inter">
 
 					<h1 id="title" class="font-bold text-center text-3xl"> GenAlt Settings </h1>		
-					<p id="plug" class="text-sm text-left mx-4"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. <br> <br> <em> Don't forget to drop a 5-star review, share with your friends, join our Discord server, star the GitHub repository, and chip in a few dollars to help support GenAlt's services. </em> </p>
+					<p class="text-sm text-left mx-4"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. <br> <br> </p>	
+
+					<em> 
+						<div class="text-sm text-left mx-4" > 
+							<span> Don't forget to drop a 5-star review, join our </span> 
+							<a href={discordLink}  target="_blank" class="underline"> Discord Server (click here)</a>,
+							and star the <a href={githubLink}  target="_blank" class="underline"> GitHub repository (click here)</a>. 
+						</div>
+					</em>
 					
 					<p class="text-base inline-block float-left mx-4 my-2"> Enable or Disable GenAlt </p>
 					

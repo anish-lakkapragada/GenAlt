@@ -47,8 +47,7 @@ chrome.runtime.onConnect.addListener((p) => {
 chrome.runtime.onInstalled.addListener((details) => {
   console.log(`runtime id: ${chrome.runtime.id}`);
   if (details.reason == 'install') {
-    // TODO redirect to some plain welcome html page
-    console.log('installed');
+    chrome.tabs.create({url: chrome.runtime.getURL('usage.html')});
   }
 
   chrome.storage.local.set({
