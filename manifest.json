@@ -1,14 +1,14 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "2.0",
-  "name": "GenAlt",
+  "name": "GenAlt - Generated Alt-Text for BVI",
   "icons": {
     "128": "images/logo_128x128.png"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/altify.bundle.js"],
+      "js": ["altify.bundle.js"],
       "all_frames": true
     }
   ], 
@@ -16,14 +16,16 @@
     "storage"
   ], 
   "background": {
-    "scripts": ["dist/background.bundle.js"],
-    "persistent": true
+    "service_worker": "background.bundle.js"
   },
-  "browser_action": {
+  "action": {
     "default_popup": "popup/public/index.html",
     "default_title": "GenAlt"
   },
   "web_accessible_resources": [
-    "usage.html"
+    {
+      "resources": ["usage.html"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

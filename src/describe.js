@@ -3,8 +3,10 @@
  * Bundled with the content script. 
  */
 
+
 import { getClient } from './loadAzure.js';
 const computerVisionClient = getClient();
+
 
 // is the image a valid image and is it the right size?
 async function valid(url) {
@@ -18,6 +20,7 @@ async function valid(url) {
 
   // check the size of the image
 
+  
   let photo = new Image();
   photo.setAttribute('src', url);
 

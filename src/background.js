@@ -3,14 +3,17 @@
  */
 
 import { describeImage } from './describe.js';
-import { OCR, needsOCR } from './OCR.js';
+//import { OCR, needsOCR } from './OCR.js';
+
+console.log('here yay!');
 
 /**
  * Handle messages from content scripts 
  * to request for captions from azure. 
  */
 
-const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
+
+/**const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 calls / 1s)
 
 chrome.runtime.onConnect.addListener((p) => {
   const port = p;
@@ -44,6 +47,9 @@ chrome.runtime.onConnect.addListener((p) => {
   });
 });
 
+**/
+
+/** 
 chrome.runtime.onInstalled.addListener((details) => {
   console.log(`runtime id: ${chrome.runtime.id}`);
   if (details.reason == 'install') {
@@ -66,6 +72,9 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 });
 
+*/
+
+/*
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.purpose === 'params') {
     chrome.storage.local.get(
@@ -96,3 +105,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   return true; // bru why zis work?
 });
+*/

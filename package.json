@@ -1,7 +1,7 @@
 {
     "scripts": {
         "build": "rollup --config rollup.config.js",
-        "firefox": "node firefox.js"
+        "create": "node create.js"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^13.1.3",

@@ -32,7 +32,7 @@ export default [
   {
     input: 'src/altify.js',
     output: {
-      file: 'dist/altify.bundle.js',
+      file: 'altify.bundle.js',
     }, 
     plugins: [
       dotenv(), 
@@ -46,7 +46,7 @@ export default [
     input: 'src/background.js', 
     output: {
       format: 'cjs',
-      file: 'dist/background.bundle.js'
+      file: 'background.bundle.js'
     }, 
     plugins: [
       dotenv(), 
