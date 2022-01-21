@@ -1,7 +1,43 @@
-import {getClient} from './loadAzure.js'; 
+const endpoint = 'https://poggers-image-captioning-api.cognitiveservices.azure.com/vision/v3.2/';
+export async function OCR(url) {
+  const finalEndpoint = endpoint + 'read/analyze';
+  // send message to read api 
+  let sentences = 'OCR Description: ';
+  
+  const response = await fetch(finalEndpoint, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Ocp-Apim-Subscription-Key': process.env.SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify({'url': url})
+  });
 
-const computerVisionClient = getClient();
+  const readUrl = response.headers.get('Operation-Location');
+  const readResp = await fetch(readUrl, {
+    headers: {'Ocp-Apim-Subscription-Key': process.env.SUBSCRIPTION_KEY}
+  });
 
+  if (readResp.status == 'succeeded') {
+    let sentences = 'OCR Description: ';
+    for (const line of readResp.readResults[0].lines) {
+      let sentence = '';
+      for (const word of line.words) {
+        sentence += word.text + ' ';
+      }
+      // eslint-disable-next-line no-unused-vars
+      sentences += sentence + '\n';
+    }
+  }
+  else if (readResp.status == 'failed') {
+    sentences = null; 
+  }
+  
+  return sentences;
+}
+
+/**
 export async function OCR(url) {
   console.log('DANK');
 
@@ -40,7 +76,9 @@ export async function OCR(url) {
   console.log(sentences);
   console.log('weeezee');
   return sentences;
-}
+}*/
+
+
 
 export function needsOCR(originalCaption) {
   // if these alts are so bad, use OCRs.

@@ -28,11 +28,7 @@ port.onMessage.addListener((msg) => {
   const images = SRC_IMAGES[url];
   let helped = false; 
   for (const image of images) {
-    if (caption === null) {
-      ERROR_SRCS[image.src] = true;
-      image.alt = ORIGINAL_ALTS[image.src] || '';
-      continue;
-    } else if (caption === 'ERROR') {
+    if (caption === 'ERROR') {
       ERROR_SRCS[image.src] = true;
       image.alt = ORIGINAL_ALTS[image.src];
       continue;

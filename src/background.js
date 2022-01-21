@@ -7,6 +7,7 @@ import { describeImage } from './describe.js';
 
 console.log('here yay!');
 
+
 /**
  * Handle messages from content scripts 
  * to request for captions from azure. 
