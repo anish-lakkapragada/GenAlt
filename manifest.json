@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "version": "2.0",
-  "name": "GenAlt",
+  "name": "GenAlt - Generated Alt-Text for BVI",
   "icons": {
     "128": "images/logo_128x128.png"
   },
