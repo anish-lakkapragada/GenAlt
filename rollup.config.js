@@ -38,8 +38,9 @@ export default [
       dotenv(), 
       resolve({
         browser: true, 
-        dedupe: ['@azure/ms-rest-js', '@azure/cognitiveservices-computervision']
-      }), 
+        dedupe: ['probe-image-size']
+      }),
+      commonjs(),  
       production && terser()]
   },
   {
@@ -49,12 +50,12 @@ export default [
       file: 'background.bundle.js'
     }, 
     plugins: [
-      dotenv(), 
+      dotenv(),
       resolve({
         browser: true, 
-        dedupe: ['@azure/ms-rest-js', '@azure/cognitiveservices-computervision']
+        dedupe: ['probe-image-size']
       }),
-      commonjs(), 
+      commonjs(),
       production && terser(), 
     ]
   }, 
