@@ -28,11 +28,7 @@ port.onMessage.addListener((msg) => {
   const images = SRC_IMAGES[url];
   let helped = false; 
   for (const image of images) {
-    if (caption === null) {
-      ERROR_SRCS[image.src] = true;
-      image.alt = ORIGINAL_ALTS[image.src] || '';
-      continue;
-    } else if (caption === 'ERROR') {
+    if (caption === 'ERROR') {
       ERROR_SRCS[image.src] = true;
       image.alt = ORIGINAL_ALTS[image.src];
       continue;
@@ -71,12 +67,50 @@ function initialFix() {
   }
 }
 
+// check if something is valid 
+
+async function valid(url) {
+  // if it ends with svg
+  if (url.includes('.svg')) {
+    return false;
+  } else if (url.includes('data:image')) {
+    // if it starts with data:image
+    return false;
+  }
+
+  let result = true; 
+  const img = new Image(); 
+  img.src = url; 
+  await new Promise((resolve) => {
+    img.onload = () => {
+      if (img.width < 75 || img.height < 75) {
+        result = false; 
+      }
+
+      resolve(); 
+    };}); 
+ 
+  return result;  
+}
+
 // fix all the images here
-function fix(params) {
+async function fix(params) {
   for (const image of document.querySelectorAll('img')) {
     if (SUCCESSFUL_CAPTIONS >= MAX_CAPTIONS_DELIVERED) {
       image.alt = ORIGINAL_ALTS[image.src]; // revert to original 
       console.log(`exceeded limit: ${Object.keys(IMAGE_ALTS).length}`);
+      continue; 
+    }
+
+    // check whether this one has been used 
+    if (ERROR_SRCS[image.src] != undefined) {
+      continue; 
+    }
+
+    const isValid = await valid(image.src); 
+    
+    if (!isValid) {
+      ERROR_SRCS[image.src] = true;
       continue; 
     }
 

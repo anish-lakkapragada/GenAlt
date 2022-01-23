@@ -1,45 +1,41 @@
-import {getClient} from './loadAzure.js'; 
-
-const computerVisionClient = getClient();
-
+const endpoint = 'https://poggers-image-captioning-api.cognitiveservices.azure.com/vision/v3.2/';
 export async function OCR(url) {
-  console.log('DANK');
-
-  // To recognize text in a local image, replace client.read() with readTextInStream() as shown:
-  let result;
-
-  try {
-    result = await computerVisionClient.read(url);
-  } catch (err) {
-    console.log(err);
-    console.log('ocr');
-    return null;
-  }
-
-
-  // Operation ID is last path segment of operationLocation (a URL)
-  let operation = result.operationLocation.split('/').slice(-1)[0];
-
-  // Wait for read recognition to complete
-  // result.status is initially undefined, since it's the result of read
-  while (result.status !== 'succeeded') {
-    setInterval(() => {1000;});
-    result = await computerVisionClient.getReadResult(operation);
-  }
-  const ret = result.analyzeResult.readResults; // Return the first page of result. Replace [0] with the desired page if this is a multi-page file such as .pdf or .tiff.
-
+  const finalEndpoint = endpoint + 'read/analyze';
+  // send message to read api 
   let sentences = 'OCR Description: ';
-  for (const line of ret[0].lines) {
-    let sentence = '';
-    for (const word of line.words) {
-      sentence += word.text + ' ';
-    }
-    sentences += sentence + '\n';
-  }
+  
+  const response = await fetch(finalEndpoint, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Ocp-Apim-Subscription-Key': process.env.SUBSCRIPTION_KEY,
+    },
+    body: JSON.stringify({'url': url})
+  });
 
-  console.log(sentences);
-  console.log('weeezee');
-  return sentences;
+  const readUrl = response.headers.get('Operation-Location');
+
+  setTimeout(() => {}, 750);
+  // read the response 
+  const interval = setInterval(() => {
+    fetch(readUrl, { headers: {'Ocp-Apim-Subscription-Key': process.env.SUBSCRIPTION_KEY}}).then(readResp => readResp.json()).then(data => {
+      console.log(data.status);
+      if (data.status === 'succeeded') {
+        for (const line of data.analyzeResult.readResults[0].lines) {
+          let sentence = '';
+          for (const word of line.words) {
+            sentence += word.text + ' ';
+          }
+          sentences += sentence + '\n';
+        }
+        console.log(sentences);
+        clearInterval(interval); 
+      
+      }
+    });}, 1000); 
+  return sentences; 
+  
 }
 
 export function needsOCR(originalCaption) {
