@@ -9,6 +9,7 @@
 	
 	const discordLink = 'https://discord.com/invite/Xcft8CrXRq'; 
 	const githubLink = 'https://github.com/anish-lakkapragada/GenAlt';
+	const guideLink = chrome.runtime.getURL("usage.html");
 
 	let loaded = false;
 	let firstTime = true; 
@@ -55,12 +56,12 @@
 
 <main> 
 	{#if loaded}
-		<html lang="en" class="w-96 h-64 mode-dark bg-gray-900">  
+		<html lang="en" class="w-96 h-96 mode-dark bg-gray-900">  
 			<body class="mode-dark bg-gray-900"> 
 				<div class="container font-inter">
 
 					<h1 id="title" class="font-bold text-center text-3xl"> GenAlt Settings </h1>		
-					<p class="text-sm text-left mx-4"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. <br> <br> </p>	
+					<p class="text-sm text-left mx-4"> In this browser popup, you can re-enable or disable GenAlt as you please, and you can also change the language of GenAlt's image descriptions. For further help, please check the usage guide by clicking <a class="text-sm underline" target="_blank" href={guideLink}> here</a>. <br> <br> </p>	
 
 					<em> 
 						<div class="text-sm text-left mx-4" > 
