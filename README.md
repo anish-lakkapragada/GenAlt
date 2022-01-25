@@ -8,19 +8,18 @@
 
 The Blind and Visually Impaired (BVI) rely on alt-text, image descriptions, to experience the trillions of images on the internet. Unfortunately most of the time, these descriptions aren't there rendering most images inaccessible. **GenAlt is a browser extension to generate these image descriptions through AI for the BVI**.
 
-  
+ 
 
 ## Discord Server and Feedback
 
-  
-
+ 
 We have a Discord Server for anybody to give their ideas or share feedback! [Click Here to Join.](https://discord.gg/Xcft8CrXRq)
 
   
 
 ## Development
 
-If you are interested in contributing or just understanding how GenAlt works, here's a brief description. Simply put, GenAlt's main job is to scan a user's webpage for images without (good) alt-text, and for those images crate an image description through Microsoft Cognitive Services that will be used as that image's alt-text. Below are the main components of the chrome extension.
+If you are interested in contributing or just understanding how GenAlt works, here's a brief description. Simply put, GenAlt's main job is to scan a user's webpage for images without (good) alt-text, and for those images crate an image description through Microsoft Cognitive Services that will be used as that image's alt-text. Below are the main components of the chrome extension. Note: *mv2 branch is for firefox development with manifest version 2.*
 
   
 
