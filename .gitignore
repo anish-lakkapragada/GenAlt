@@ -4,6 +4,7 @@
 /dist/
 dist/
 *.DS_Store
+/extension/
 popup/public
 popup/scripts
 popup/node_modules
