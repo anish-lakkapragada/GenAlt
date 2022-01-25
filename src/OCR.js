@@ -15,26 +15,33 @@ export async function OCR(url) {
   });
 
   const readUrl = response.headers.get('Operation-Location');
+  
+  setTimeout(() => {}, 4000); 
 
-  setTimeout(() => {}, 750);
-  // read the response 
-  const interval = setInterval(() => {
+  let shouldRun = true; 
+  const sleep = ms => new Promise(res => setTimeout(res, ms));
+  while (shouldRun) {
+    await sleep(1500);
     fetch(readUrl, { headers: {'Ocp-Apim-Subscription-Key': process.env.SUBSCRIPTION_KEY}}).then(readResp => readResp.json()).then(data => {
       console.log(data.status);
       if (data.status === 'succeeded') {
         for (const line of data.analyzeResult.readResults[0].lines) {
-          let sentence = '';
-          for (const word of line.words) {
-            sentence += word.text + ' ';
-          }
-          sentences += sentence + '\n';
+          sentences += line.words.map(word => word.text).join(' ') + ' .'; 
         }
-        console.log(sentences);
-        clearInterval(interval); 
-      
+        
+        shouldRun = false;
       }
-    });}, 1000); 
-  return sentences; 
+
+      else if (data.status === 'failed') {
+        shouldRun = false; 
+        console.log(`failed ocr on this url: ${url}`);
+      }
+
+      console.log('retrying again');
+    });
+  }
+
+  return sentences;
   
 }
 

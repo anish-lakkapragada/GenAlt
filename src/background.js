@@ -31,10 +31,10 @@ chrome.runtime.onConnect.addListener((p) => {
       return;
     } else if (needsOCR(caption)) {
       // caption is a string, not object.
-      const ocr = await OCR(url);
-      const newCaption = ocr.length > caption.length ? ocr : caption;
-      rateLimiter.numCalls++;
-      port.postMessage({ url: url, caption: newCaption });
+      rateLimiter.numCalls++; 
+      const ocr_caption = await OCR(url);
+      console.log('received OCR: ' + ocr_caption);
+      port.postMessage({ url: url, caption: ocr_caption });
       return;
     }
 
