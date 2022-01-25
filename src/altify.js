@@ -41,6 +41,7 @@ port.onMessage.addListener((msg) => {
     helped = true; 
     IMAGE_ALTS[image.src] = caption; 
     image.alt = caption; // for the lucky many.
+    image.title = caption; // add the caption to the title. 
     console.log(`setting the alt to : ${caption}`);
   }
 
@@ -65,6 +66,11 @@ function initialFix() {
       image.alt = DEFAULT_ALT;
     } else if (resetAlt && IMAGE_ALTS[image.src] == undefined) {
       image.alt = DEFAULT_ALT;
+    }
+    
+    else if (useful(image.alt)) {
+      // if it's actually useful
+      image.title = image.alt; 
     }
 
     ORIGINAL_ALTS[image.src] = image.alt;
