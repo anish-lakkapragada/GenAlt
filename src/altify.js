@@ -16,9 +16,10 @@ const resetAlt = badSite(window.location);
 let IMAGE_ALTS = {};
 let ERROR_SRCS = {}; // images known to cause trouble
 let ORIGINAL_ALTS = {};
+const RAN_ON = []; 
  
 let SUCCESSFUL_CAPTIONS = 0;
-const MAX_CAPTIONS_DELIVERED = 300;
+const MAX_CAPTIONS_DELIVERED = 50;
  
 const SRC_IMAGES = {};
  
@@ -85,15 +86,23 @@ function fix(params) {
       console.log(`exceeded limit: ${Object.keys(IMAGE_ALTS).length}`);
       continue; 
     }
- 
-    if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined) {
-      console.log(`running again on: ${image.src}`);
+    
+    if (image.src.includes('data:image')) {
+      continue;
+    }
+
+    if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined && ERROR_SRCS[image.src] == undefined) {
+      console.log('running again on ' + image.src);
+      if (RAN_ON.includes(image.src)) {
+        continue;
+      }
       // first make sure it's in the images list
       if (SRC_IMAGES[image.src] == undefined) {
         SRC_IMAGES[image.src] = [image]; 
       }
  
       port.postMessage({ url: image.src, language: params.language });
+      RAN_ON.push(image.src);
     } else if (
       IMAGE_ALTS[image.src] != undefined &&
        IMAGE_ALTS[image.src] != image.alt

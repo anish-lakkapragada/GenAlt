@@ -22,6 +22,7 @@
         "eslint-config-semistandard": "^16.0.0",
         "eslint-plugin-svelte3": "^3.3.0",
         "fs": "0.0.1-security",
+        "ms-rest-js": "^1.0.1",
         "os": "^0.1.2",
         "path": "^0.12.7",
         "rollup": "^2.52.8",
