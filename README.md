@@ -19,7 +19,7 @@ We have a Discord Server for anybody to give their ideas or share feedback! [Cli
 
 ## Development
 
-If you are interested in contributing or just understanding how GenAlt works, here's a brief description. Simply put, GenAlt's main job is to scan a user's webpage for images without (good) alt-text, and for those images crate an image description through Microsoft Cognitive Services that will be used as that image's alt-text. Below are the main components of the chrome extension. Note: *mv2 branch is for firefox development with manifest version 2.*
+If you are interested in contributing or just understanding how GenAlt works, here's a brief description. Simply put, GenAlt's main job is to scan a user's webpage for images without (good) alt-text, and for those images crate an image description through Microsoft Cognitive Services that will be used as that image's alt-text. Below are the main components of the chrome extension. Another version of this extension requires that the user right clicks on the context menu to get an image description. The source code of this version is on the `contextMenu` branch. Note: *mv2 branch is for firefox development with manifest version 2.*
 
   
 
