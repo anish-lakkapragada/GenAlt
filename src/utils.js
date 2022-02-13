@@ -12,7 +12,8 @@ const LENGTH_MINIMUM = 15;
 const USELESS_PHRASES = [
   'No photo description available.',
   'Image',
-  'Logo'
+  'Logo', 
+  'No description available.'
 ];
 
 export function useful(text) {

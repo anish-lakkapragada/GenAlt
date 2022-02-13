@@ -12,34 +12,38 @@ const rateLimiter = { numCalls: 0, date: new Date() }; // rate limit object (6 c
 
 chrome.runtime.onConnect.addListener((p) => {
   const port = p;
-  console.log(`the name for this port is: ${port.name}`);
-  port.onMessage.addListener(async (msg) => {
-    const { url, language } = msg;
-    console.log(`using this language: ${language}`);
-    if (rateLimiter.numCalls == 6) {
-      console.log('waiting');
-      await new Promise((resolve) => setTimeout(resolve, 1000 - (new Date() - rateLimiter.date)));
-      console.log('done waiting');
-      rateLimiter.numCalls = 0;
-      rateLimiter.date = new Date();
-    }
-
-    const caption = await describeImage(url, { maxCandidates: 1, language: language });
-    rateLimiter.numCalls++;
-    if (caption === 'ERROR') {
-      port.postMessage({ url: url, caption: caption });
-      return;
-    } else if (needsOCR(caption)) {
-      // caption is a string, not object.
-      rateLimiter.numCalls++; 
-      const ocr_caption = await OCR(url);
-      console.log('received OCR: ' + ocr_caption);
-      port.postMessage({ url: url, caption: ocr_caption });
-      return;
-    }
-
-    port.postMessage({ url: url, caption: caption });
+  
+  // after connecting create context menu
+  chrome.contextMenus.create({
+    id: 'getDescription',
+    title: 'Get Image Description', 
+    contexts: ['image']
   });
+  
+  // eslint-disable-next-line no-unused-vars
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    const {srcUrl, linkUrl} = info; // get the info
+    chrome.storage.local.get(['language'], (async (result) => {
+      const {language} = result; 
+      if (rateLimiter.numCalls == 6) {
+        console.log('waiting');
+        await new Promise((resolve) => setTimeout(resolve, 1000 - (new Date() - rateLimiter.date)));
+        console.log('done waiting');
+        rateLimiter.numCalls = 0;
+        rateLimiter.date = new Date();
+      }
+
+      let caption = await describeImage(srcUrl, { maxCandidates: 1, language: language });
+      rateLimiter.numCalls++;
+      if (caption == 'ERROR') {return;}
+      
+      if (needsOCR(caption)) {
+        caption = await OCR(srcUrl);
+      }
+
+      port.postMessage({'urls': [srcUrl, linkUrl], 'caption': caption});
+    }));
+  }); 
 });
 
  
