@@ -19,7 +19,7 @@ let ORIGINAL_ALTS = {};
 const RAN_ON = []; 
  
 let SUCCESSFUL_CAPTIONS = 0;
-const MAX_CAPTIONS_DELIVERED = 50;
+const MAX_CAPTIONS_DELIVERED = 300;
  
 const SRC_IMAGES = {};
  
