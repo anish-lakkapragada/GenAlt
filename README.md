@@ -1,5 +1,5 @@
 
-# GenAlt - Generated Image Descriptions for BVI
+# [GenAlt - Generated Image Descriptions for BVI](https://chrome.google.com/webstore/detail/genalt-generated-alt-text/ekbmkapnmnhhgfmjdnchgmcfggibebnn?hl=en&authuser=0)
 
 ![License Used](https://img.shields.io/github/license/anish-lakkapragada/GenAlt)
 ![Total Lines](https://img.shields.io/tokei/lines/github/anish-lakkapragada/GenAlt)
