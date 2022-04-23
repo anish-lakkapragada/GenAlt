@@ -18,8 +18,9 @@ let ERROR_SRCS = {}; // images known to cause trouble
 let ORIGINAL_ALTS = {};
 const RAN_ON = []; 
  
-let SUCCESSFUL_CAPTIONS = 0;
-const MAX_CAPTIONS_DELIVERED = 300;
+//let SUCCESSFUL_CAPTIONS = 0;
+let NUM_TRIES =0; 
+const MAX_CAPTIONS_DELIVERED = 100;
  
 const SRC_IMAGES = {};
  
@@ -28,14 +29,18 @@ port.onMessage.addListener((msg) => {
   const { url, caption } = msg; // caption is a string, not object
   const images = SRC_IMAGES[url];
   let helped = false; 
+  console.log(`for this url: ${url} getting this caption back: ${caption}`);
   for (const image of images) {
     if (caption === null) {
       ERROR_SRCS[image.src] = true;
       image.alt = ORIGINAL_ALTS[image.src] || '';
       continue;
     } else if (caption === 'ERROR') {
+      console.log('ERROR DAMNIST');
       ERROR_SRCS[image.src] = true;
       image.alt = ORIGINAL_ALTS[image.src];
+      console.log(ORIGINAL_ALTS[image.src]);
+      console.log('replaced');
       continue;
     }
  
@@ -56,6 +61,7 @@ function initialFix() {
   for (let i = 0; i < images.length; i++) {
     // iterate through all the images
     const image = images[i];
+    ORIGINAL_ALTS[image.src] = image.alt;
     if (ERROR_SRCS[image.src] != undefined) {
       continue;
     }
@@ -73,26 +79,27 @@ function initialFix() {
       // if it's actually useful
       image.title = image.alt; 
     }
- 
-    ORIGINAL_ALTS[image.src] = image.alt;
   }
 }
  
 // fix all the images here
 function fix(params) {
   for (const image of document.querySelectorAll('img')) {
-    if (SUCCESSFUL_CAPTIONS >= MAX_CAPTIONS_DELIVERED) {
+    if (NUM_TRIES >= MAX_CAPTIONS_DELIVERED) {
       image.alt = ORIGINAL_ALTS[image.src]; // revert to original 
       console.log(`exceeded limit: ${Object.keys(IMAGE_ALTS).length}`);
+      revertAlt(); 
       continue; 
     }
     
-    if (image.src.includes('data:image')) {
+    if (image.src.includes('data:image') || image.src.includes('svg')) {
       continue;
     }
 
     if (image.alt == DEFAULT_ALT && IMAGE_ALTS[image.src] == undefined && ERROR_SRCS[image.src] == undefined) {
       console.log('running again on ' + image.src);
+      console.log(ERROR_SRCS);
+      console.log('error sources');
       if (RAN_ON.includes(image.src)) {
         continue;
       }
@@ -100,8 +107,18 @@ function fix(params) {
       if (SRC_IMAGES[image.src] == undefined) {
         SRC_IMAGES[image.src] = [image]; 
       }
- 
-      port.postMessage({ url: image.src, language: params.language });
+
+
+      // check for width and height here
+      if (image.width >= 75 && image.height >= 75) {
+        port.postMessage({ url: image.src, language: params.language });
+        NUM_TRIES++; 
+      }
+
+      else {
+        console.log('SAVED');
+      }
+
       RAN_ON.push(image.src);
     } else if (
       IMAGE_ALTS[image.src] != undefined &&
@@ -174,6 +191,7 @@ async function main() {
       if (pastLanguage != response.language && pastLanguage != null) {
         IMAGE_ALTS = {};
         SUCCESSFUL_CAPTIONS = 0; 
+        NUM_TRIES = 0; 
         revertAlt(true);
       }
  

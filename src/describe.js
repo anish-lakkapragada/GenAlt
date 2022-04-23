@@ -22,7 +22,10 @@ export async function describeImage(describeURL, params) {
 
   const data = await response.json();
   // in case this image no work with azure. 
+  console.log(data);
   if (data.description == undefined || data?.description.captions.length == 0) {
+    console.log('probably an error');
+    console.log(data);
     return 'ERROR';
   }
 

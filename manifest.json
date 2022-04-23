@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "version": "2.0",
   "name": "GenAlt - Generated Alt-Text for BVI",
+  "description": "Get image descriptions for a better internet experience without any setup!", 
   "icons": {
     "128": "images/logo_128x128.png"
   },
