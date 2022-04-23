@@ -1,5 +1,5 @@
 
-# GenAlt - Generated Image Descriptions for BVI
+# [GenAlt - Generated Image Descriptions for BVI](https://chrome.google.com/webstore/detail/genalt-generated-alt-text/ekbmkapnmnhhgfmjdnchgmcfggibebnn?hl=en&authuser=0)
 
 ![License Used](https://img.shields.io/github/license/anish-lakkapragada/GenAlt)
 ![Total Lines](https://img.shields.io/tokei/lines/github/anish-lakkapragada/GenAlt)
@@ -13,7 +13,7 @@ The Blind and Visually Impaired (BVI) rely on alt-text, image descriptions, to e
 ## Discord Server and Feedback
 
  
-We have a Discord Server for anybody to give their ideas or share feedback! [Click Here to Join.](https://discord.gg/Xcft8CrXRq)
+We have a Discord Server for anybody to give their ideas or share feedback!! [Click Here to Join.](https://discord.gg/Xcft8CrXRq)
 
   
 
