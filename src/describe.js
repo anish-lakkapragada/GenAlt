@@ -3,7 +3,6 @@
  * Bundled with the content script. 
  */
 
-
 const endpoint = 'https://poggers-image-captioning-api.cognitiveservices.azure.com/vision/v3.2/';
 
 export async function describeImage(describeURL, params) {
@@ -29,5 +28,9 @@ export async function describeImage(describeURL, params) {
     return 'ERROR';
   }
 
+  else if (data.error != undefined) {
+    return 'ERROR';
+  }
+  
   return data.description.captions[0].text;
 }
